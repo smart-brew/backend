@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "commit-message-validator": "^1.0.2",
+    "husky": "^7.0.2"
+  },
+  "config": {
+    "commit-message-validator": {
+      "pattern": "((feature)|(fix)|(chore))\\(SB-[1-9]\\d*\\): .*",
+      "errorMessage": "+--------------------------------------------------------------------+\n| Check correct commit message formatting in SmartBrew documentation |\n+--------------------------------------------------------------------+"
+    }
+  }
+}
