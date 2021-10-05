@@ -1,0 +1,25 @@
+name: Update Raspberry Pi
+
+on:
+  push:
+    branches: [ main ]
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Update
+    runs-on: ubuntu-latest
+    steps:
+    - name: Connect SSH and execute script
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          whoami
+          cd /home/pi/backend
+          ls -al
