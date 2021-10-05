@@ -23,6 +23,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          whoami
           cd /home/pi/backend
           ls -al
+          git pull
+          cat README.md
