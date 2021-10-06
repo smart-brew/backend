@@ -26,4 +26,4 @@ jobs:
             git pull
             ls -la
             docker-compose build
-            docker-compose up
+            docker-compose up --detach
