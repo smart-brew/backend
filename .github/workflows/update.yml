@@ -1,29 +1,29 @@
-name: Update Raspberry Pi
+name: Update Raspberry Pi and run docker
 
 on:
   # listen to manual trigger
   workflow_dispatch:
-  
+
   # listen to push
   push:
-    branches: [ main ]
-
+    branches: [main]
 
 jobs:
   build:
     name: Update
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Connect SSH and execute script
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: |
-          cd /home/pi/backend
-          ls -al
-          git pull
-          cat README.md
+      - name: Connect SSH and execute script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/pi/backend
+            git pull
+            ls -la
+            docker-compose build
+            docker-compose up
