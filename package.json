@@ -1,10 +1,11 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "license": "MIT",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "node server.js"
   },
   "devDependencies": {
     "commit-message-validator": "^1.0.2",
@@ -15,5 +16,9 @@
       "pattern": "((feature)|(fix)|(chore))\\(SB-[1-9]\\d*\\): .*",
       "errorMessage": "+--------------------------------------------------------------------+\n| Check correct commit message formatting in SmartBrew documentation |\n+--------------------------------------------------------------------+"
     }
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
   }
 }
