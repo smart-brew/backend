@@ -5,6 +5,7 @@ services:
     ports:
       - 8000:8000
     container_name: server
+    restart: always
 
   postgres:
     container_name: database
