@@ -5,3 +5,20 @@ services:
     ports:
       - 8000:8000
     container_name: server
+
+    postgres:
+    container_name: database
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: smartbrew_user
+      POSTGRES_PASSWORD: smartbrew
+      POSTGRES_DB: smartbrew_database
+    ports:
+      - "5050:5050"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+      - database/data.sql:/docker-entrypoint-initdb.d/data.sql
+      
+volumes:
+  postgres-data:
