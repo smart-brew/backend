@@ -26,19 +26,20 @@ jobs:
       - name: SSH vm
         run: | 
           ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} /bin/bash <<'EOT'
-          echo "These commands will be run on: $( uname -a )"
-          echo "They are executed by: $( whoami )"
           ls -la
+          ssh -p 2222 pi@localhost /bin/bash <<'EOT2'
+            ls -la
+          EOT2   
           EOT
       
-      - name: List Ub
-        run: ls -la
+      # - name: List Ub
+      #   run: ls -la
       
-      - name: SSH rpi
-        run: ssh -p 2222 pi@localhost
+      # - name: SSH rpi
+      #   run: ssh -p 2222 pi@localhost
 
-      - name: List rpi
-        run: ls -la
+      # - name: List rpi
+      #   run: ls -la
 
       - name: Connect SSH and execute script
         uses: appleboy/ssh-action@master
