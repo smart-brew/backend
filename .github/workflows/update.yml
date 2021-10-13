@@ -33,5 +33,5 @@ jobs:
               ls -la
               docker-compose build
               docker-compose up --detach
-            SSH_RPI   
+            SSH_RPI
           SSH_VM
