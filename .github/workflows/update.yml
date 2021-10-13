@@ -24,7 +24,12 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
       - name: SSH vm
-        run: ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }}
+        run: | 
+          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} /bin/bash <<'EOT'
+          echo "These commands will be run on: $( uname -a )"
+          echo "They are executed by: $( whoami )"
+          ls -la
+          EOT
       
       - name: List Ub
         run: ls -la
