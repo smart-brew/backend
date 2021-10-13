@@ -19,9 +19,9 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
+          key: ${{ secrets.KEY }}
           script: |
+            ssh -p 2222 pi@localhost
             cd /home/pi/backend
             git pull
             ls -la
