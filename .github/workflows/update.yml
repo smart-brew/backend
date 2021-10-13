@@ -25,9 +25,9 @@ jobs:
 
       - name: Nested ssh to VM and then to RPI with docker commands
         run: |
-          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} /bin/bash <<SSH_VM
+          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} /bin/bash <<- 'SSH_VM'
             ls -la
-            ssh -p 2222 pi@localhost /bin/bash <<SSH_RPI
+            ssh -p 2222 pi@localhost /bin/bash <<- 'SSH_RPI'
               cd /home/pi/backend
               git pull
               ls -la
