@@ -20,13 +20,9 @@ services:
       - 8000:8000
     container_name: server
     restart: always
-    depends_on: 
-      - postgres
-    entrypoint:
-    command: sh -c './wait-for db:5432 -- node app.js'
+    # command: sh -c './wait-for postgres:5432 -- node server.js'
     depends_on:
       - postgres
-
 
 volumes:
   postgres-data:
