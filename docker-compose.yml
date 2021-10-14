@@ -18,6 +18,7 @@ services:
     build: .
     ports:
       - 8000:8000
+      - 8001:8001
     container_name: server
     restart: always
     # command: sh -c './wait-for postgres:5432 -- node server.js'

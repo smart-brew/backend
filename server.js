@@ -1,24 +1,39 @@
-var express = require('express');
+import { WebSocketServer } from 'ws';
+import express from 'express';
 
-var app = express();
+const PORT = 8000;
+const WS_PORT = 8001;
+
+const server = express();
+const wss = new WebSocketServer({ port: WS_PORT }, () => {
+  console.log('WS Server is running on PORT:', WS_PORT);
+});
+
+wss.on('connection', function connection(ws) {
+  console.log('Client connected');
+
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+  });
+
+  ws.send('Hello from server');
+});
 
 // parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: false }))
+server.use(express.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(express.json())
+server.use(express.json());
 
-var PORT = 8000;
-
-app.post('/', function(req, res) {
-    console.log(req.body);
-    res.json(req.body);
+server.post('/', function (req, res) {
+  console.log(req.body);
+  res.json(req.body);
 });
 
-app.get('/', function(req, res) {
-    res.status(200).send("Hello World!");
+server.get('/', function (req, res) {
+  res.status(200).send('Hello World!');
 });
 
-app.listen(PORT, function() {
-    console.log('Server is running on PORT:',PORT);
+server.listen(PORT, function () {
+  console.log('HTTP Server is running on PORT:', PORT);
 });
