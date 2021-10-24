@@ -29,15 +29,52 @@ wss.on('connection', function connection(ws) {
   ws.send('Hello from server');
 });
 
-server.post('/', function (req, res) {
+// parse application/x-www-form-urlencoded
+server.use(express.urlencoded({ extended: false }));
+
+// parse application/json
+server.use(express.json());
+
+// todo get all recipes
+server.get('/api/recipe', function (req, res) {
+  res.status(200).send('Endpoint na vsetky recept');
+});
+
+// todo select posted recipe
+server.post('/api/recipe/:recipeId', function (req, res) {
   console.log(req.body);
   res.json(req.body);
 });
 
-server.get('/', function (req, res) {
-  res.status(200).send('Hello World!');
+// todo add new recipe
+server.post('/api/recipe', function (req, res) {
+  console.log(req.body);
+  res.json(req.body);
 });
 
+// todo start brewing new recipe
+server.post('/api/brew/:recipeId', function (req, res) {
+  console.log(req.body);
+  res.json(req.body);
+});
+
+// todo get status of running recipe
+server.get('/api/brew/:brewId', function (req, res) {
+  console.log(req.body);
+  res.status(200).send('Tu bude status nejakeho receptu...');
+});
+
+// todo stop running recipe
+server.put('/api/brew/:brewId', function (req, res) {
+  res.status(200).send('Zrusenie varenia...');
+});
+
+// todo change step of recipe - must running and step is not marked as done or in prosgess
+server.put('/api/brew/:brewId/step/:stepId', function (req, res) {
+  res.status(200).send('Endpoint na recept');
+});
+
+// backend server start
 server.listen(PORT, function () {
   console.log('HTTP Server is running on PORT:', PORT);
 });
