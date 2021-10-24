@@ -1,10 +1,20 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
+import { PrismaClient } from '@prisma/client'
 
 const PORT = 8000;
 const WS_PORT = 8001;
 
+const prisma = new PrismaClient()
+
 const server = express();
+
+// parse application/x-www-form-urlencoded
+server.use(express.urlencoded({ extended: false }));
+
+// parse application/json
+server.use(express.json());
+
 const wss = new WebSocketServer({ port: WS_PORT }, () => {
   console.log('WS Server is running on PORT:', WS_PORT);
 });
@@ -18,12 +28,6 @@ wss.on('connection', function connection(ws) {
 
   ws.send('Hello from server');
 });
-
-// parse application/x-www-form-urlencoded
-server.use(express.urlencoded({ extended: false }));
-
-// parse application/json
-server.use(express.json());
 
 server.post('/', function (req, res) {
   console.log(req.body);
