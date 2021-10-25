@@ -1,4 +1,5 @@
 import { WebSocketServer } from 'ws';
+import { Sequelize, Op, Model, DataTypes } from 'sequelize';
 import express from 'express';
 
 const PORT = 8000;
