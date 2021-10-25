@@ -12,11 +12,11 @@ model Brewings {
   reciepe_id       Int?
   notes            String?            @db.VarChar
   evaluation       Int?
-  created_at       DateTime?          @db.Timestamp(6)
-  updated_at       DateTime?          @db.Timestamp(6)
-  deleted_at       DateTime?          @db.Timestamp(6)
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
   Recepies         Recepies?          @relation(fields: [reciepe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Instruction_logs Instruction_logs[]
+  Status_logs      Status_logs[]
 }
 
 model Function_templates {
@@ -24,10 +24,9 @@ model Function_templates {
   module_id    Int?
   name         String?        @db.VarChar
   description  String?        @db.VarChar
-  param_types  String?        @db.VarChar
-  created_at   DateTime?      @db.Timestamp(6)
-  updated_at   DateTime?      @db.Timestamp(6)
-  deleted_at   DateTime?      @db.Timestamp(6)
+  params       Json?          @db.Json
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
   Modules      Modules?       @relation(fields: [module_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Instructions Instructions[]
 }
@@ -35,87 +34,76 @@ model Function_templates {
 model Instruction_logs {
   id             Int           @id @default(autoincrement())
   brewing_id     Int?
-  step_id        Int?
   instruction_id Int?
   started_at     DateTime?     @db.Timestamp(6)
   finished_at    DateTime?     @db.Timestamp(6)
-  created_at     DateTime?     @db.Timestamp(6)
-  updated_at     DateTime?     @db.Timestamp(6)
-  deleted_at     DateTime?     @db.Timestamp(6)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
   Brewings       Brewings?     @relation(fields: [brewing_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Instructions   Instructions? @relation(fields: [instruction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Steps          Steps?        @relation(fields: [step_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Instructions {
   id                   Int                 @id @default(autoincrement())
+  reciepe_id           Int?
   step_id              Int?
   function_template_id Int?
-  params               String?             @db.VarChar
-  created_at           DateTime?           @db.Timestamp(6)
-  updated_at           DateTime?           @db.Timestamp(6)
-  deleted_at           DateTime?           @db.Timestamp(6)
+  ordering             Int?
+  params               Json?               @db.Json
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  Recepies             Recepies?           @relation(fields: [reciepe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Function_templates   Function_templates? @relation(fields: [function_template_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Steps                Steps?              @relation(fields: [step_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Instruction_logs     Instruction_logs[]
-}
-
-model Log_param_mappings {
-  id              Int           @id @default(autoincrement())
-  sensors_mapping String?       @db.VarChar
-  valid_from      DateTime?     @db.Timestamp(6)
-  valid_to        DateTime?     @db.Timestamp(6)
-  created_at      DateTime?     @db.Timestamp(6)
-  updated_at      DateTime?     @db.Timestamp(6)
-  deleted_at      DateTime?     @db.Timestamp(6)
-  Status_logs     Status_logs[]
 }
 
 model Modules {
   id                 Int                  @id @default(autoincrement())
   name               String?              @db.VarChar
   description        String?              @db.VarChar
-  created_at         DateTime?            @db.Timestamp(6)
-  updated_at         DateTime?            @db.Timestamp(6)
-  deleted_at         DateTime?            @db.Timestamp(6)
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
   Function_templates Function_templates[]
 }
 
+model Ingredients {
+  id         Int       @id @default(autoincrement())
+  reciepe_id Int?
+  name       String?   @db.VarChar
+  amount     Int?
+  type       Int?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  Recepies   Recepies? @relation(fields: [reciepe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
 model Recepies {
-  id          Int           @id @default(autoincrement())
-  name        String?       @db.VarChar
-  description String?       @db.VarChar
-  created_at  DateTime?     @db.Timestamp(6)
-  updated_at  DateTime?     @db.Timestamp(6)
-  deleted_at  DateTime?     @db.Timestamp(6)
-  Brewings    Brewings[]
-  Status_logs Status_logs[]
-  Steps       Steps[]
+  id           Int            @id @default(autoincrement())
+  name         String?        @db.VarChar
+  description  String?        @db.VarChar
+  locked       Boolean?       @db.Boolean
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  Brewings     Brewings[]
+  Instructions Instructions[]
+  Ingredients  Ingredients[]
 }
 
 model Status_logs {
-  id                   Int                 @id @default(autoincrement())
-  reciepe_id           Int?
-  step_id              Int?
-  log_param_mapping_id Int?
-  status               String?             @db.VarChar
-  params               String?             @db.VarChar
-  created_at           DateTime?           @db.Timestamp(6)
-  updated_at           DateTime?           @db.Timestamp(6)
-  deleted_at           DateTime?           @db.Timestamp(6)
-  Log_param_mappings   Log_param_mappings? @relation(fields: [log_param_mapping_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Recepies             Recepies?           @relation(fields: [reciepe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Steps                Steps?              @relation(fields: [step_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int       @id @default(autoincrement())
+  brewing_id Int?
+  status     String?   @db.VarChar
+  params     Json?     @db.Json
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  Brewings   Brewings? @relation(fields: [brewing_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Steps {
-  id               Int                @id @default(autoincrement())
-  reciepe_id       Int?
-  created_at       DateTime?          @db.Timestamp(6)
-  updated_at       DateTime?          @db.Timestamp(6)
-  deleted_at       DateTime?          @db.Timestamp(6)
-  Recepies         Recepies?          @relation(fields: [reciepe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Instruction_logs Instruction_logs[]
-  Instructions     Instructions[]
-  Status_logs      Status_logs[]
+  id           Int            @id @default(autoincrement())
+  name         String?        @db.VarChar
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  Instructions Instructions[]
 }
