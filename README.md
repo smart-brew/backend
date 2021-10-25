@@ -13,3 +13,9 @@ docker-compose up
 ## Development
 
 Please USE `yarn`, instead of `npm`
+
+Start with hot-reload:
+
+```bash
+yarn dev
+```

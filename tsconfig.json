@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "noImplicitAny": true,
+    "target": "es5",
+    "module": "es2015",
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
@@ -12,5 +12,5 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["server.js", "src/**/*"]
+  "include": ["src/**/*"]
 }
