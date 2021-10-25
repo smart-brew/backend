@@ -1,12 +1,8 @@
 import { WebSocketServer } from 'ws';
-import { Sequelize, Op, Model, DataTypes } from 'sequelize';
 import express from 'express';
-import { PrismaClient } from '@prisma/client'
 
 const PORT = 8000;
 const WS_PORT = 8001;
-
-const prisma = new PrismaClient()
 
 const server = express();
 
@@ -29,12 +25,6 @@ wss.on('connection', function connection(ws) {
 
   ws.send('Hello from server');
 });
-
-// parse application/x-www-form-urlencoded
-server.use(express.urlencoded({ extended: false }));
-
-// parse application/json
-server.use(express.json());
 
 // todo get all recipes
 server.get('/api/recipe', function (req, res) {
