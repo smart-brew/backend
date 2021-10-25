@@ -7,6 +7,7 @@
     "build": "yarn clean && tsc",
     "clean": "rimraf dist/*",
     "dev": "nodemon --watch src -e ts,js --exec yarn start:dev",
+    "generate": "prisma generate",
     "prepare": "husky install",
     "start": "node .",
     "start:dev": "yarn build && yarn start"
