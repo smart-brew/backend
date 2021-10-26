@@ -22,7 +22,7 @@ model Brewings {
 model Function_templates {
   id           Int            @id @default(autoincrement())
   module_id    Int?
-  name         String?        @db.VarChar
+  name         String         @db.VarChar @unique
   description  String?        @db.VarChar
   params       Json?          @db.Json
   created_at   DateTime       @default(now())
@@ -71,8 +71,8 @@ model Ingredients {
   id         Int       @id @default(autoincrement())
   reciepe_id Int?
   name       String?   @db.VarChar
-  amount     Int?
-  type       Int?
+  amount     Float?
+  type       String?   @db.VarChar
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   Recepies   Recepies? @relation(fields: [reciepe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -102,7 +102,7 @@ model Status_logs {
 
 model Steps {
   id           Int            @id @default(autoincrement())
-  name         String?        @db.VarChar
+  name         String?        @db.VarChar  @unique
   created_at   DateTime       @default(now())
   updated_at   DateTime       @updatedAt
   Instructions Instructions[]

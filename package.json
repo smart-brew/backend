@@ -8,9 +8,13 @@
     "clean": "rimraf dist/*",
     "dev": "nodemon --watch src -e ts,js --exec yarn start:dev",
     "migrate": "yarn dotenv -e .dev.env yarn prisma migrate dev",
+    "seed": "yarn dotenv -e .dev.env yarn prisma db seed",
     "prepare": "husky install",
     "start": "node .",
     "start:dev": "yarn build && yarn start"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
