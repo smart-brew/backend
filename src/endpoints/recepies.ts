@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
+import { db } from '../prismaClient';
 
-export const getAllRecepies = (req: Request, res: Response) => {
+export const getAllRecepies = async (req: Request, res: Response) => {
   console.log(req.body);
-  res.status(200).send('TODO: getAllRecepies');
+  res.json(await db.recepies.findMany());
 };
 
 export const loadRecepie = (req: Request, res: Response) => {
