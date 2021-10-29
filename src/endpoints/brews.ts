@@ -3,7 +3,12 @@ import { db } from '../prismaClient';
 
 export const brewStatus = (req: Request, res: Response) => {
   console.log(req.body);
-  res.status(200).send('TODO: Tu bude status nejakeho receptu...');
+  res.json({
+    TEMP_1: {
+      TEMP: 30.2,
+    },
+  });
+  // res.status(200).send('TODO: Tu bude status nejakeho receptu...');
 };
 
 export const startBrewing = (req: Request, res: Response) => {
