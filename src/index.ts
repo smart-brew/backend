@@ -3,10 +3,14 @@ import express from 'express';
 import cors from 'cors';
 
 import {
-  createRecepie,
-  getAllRecepies,
-  loadRecepie,
-} from './endpoints/recepies';
+  createRecipe,
+  getAllRecipes,
+  loadRecipe,
+} from './endpoints/recipes';
+
+import{
+  getAllFunctions,
+} from './endpoints/functions';
 
 import {
   abortBrew,
@@ -47,9 +51,11 @@ wss.on('connection', function connection(ws) {
   ws.send('Hello from server');
 });
 
-server.get('/api/recipe', getAllRecepies);
-server.put('/api/recipe', createRecepie);
-server.post('/api/recipe/:recipeId/load', loadRecepie);
+server.get('/api/recipe', getAllRecipes);
+server.put('/api/recipe', createRecipe);
+server.post('/api/recipe/:recipeId/load', loadRecipe);
+
+server.get('/api/function', getAllFunctions);
 
 server.get('/api/brew', getAllBrews);
 server.get('/api/brew/:brewId', brewStatus);
