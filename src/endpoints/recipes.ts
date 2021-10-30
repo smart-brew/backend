@@ -8,20 +8,7 @@ export const getAllRecipes = async (req: Request, res: Response) => {
       Ingredients: true,
       Blocks: {
         include: {
-          Instructions: {
-            include: {
-              Function_templates: {
-                select: {
-                  id: true,
-                }
-              },
-              Function_options:  {
-                select: {
-                  id: true,
-                }
-              },
-            }
-          },
+          Instructions: true
         }
       }
     }
