@@ -27,6 +27,13 @@ const WS_PORT = 8001;
 
 const server = express();
 
+const currentModuleData: ModuleData = {
+  TEMPERATURE: [],
+  MOTOR: [],
+  UNLOADER: [],
+  PUMP: [],
+};
+
 // fix cors
 server.use(cors());
 
@@ -55,6 +62,10 @@ server.post('/api/brew/:brewId/resume', resumeBrew);
 server.post('/api/brew/:brewId/step/:stepId', editBrewStep);
 server.post('/api/brew/:brewId/step/:stepId/confirm', confirmStep);
 
+server.get('/api/data', (req, res) => {
+  res.json(currentModuleData);
+});
+
 // backend server start
 server.listen(PORT, function () {
   console.log('HTTP Server is running on PORT:', PORT);
@@ -68,15 +79,8 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
 type WSClient = WebSocket & { isAlive: boolean; name: string };
 var clients: WSClient[] = [];
 
-const allModuleData: ModuleData = {
-  TEMPERATURE: [],
-  MOTOR: [],
-  UNLOADER: [],
-  PUMP: [],
-};
-
 const updateData = (key: keyof ModuleData, newData: DataCategory) => {
-  const cachedData: DataCategory[] = allModuleData[key];
+  const cachedData: DataCategory[] = currentModuleData[key];
 
   for (let i = 0; i < cachedData.length; i++) {
     if (cachedData[i].DEVICE === newData.DEVICE) {
@@ -96,7 +100,7 @@ wss.on('connection', (ws: WSClient) => {
     ws.name = data.moduleId;
 
     // iterate over all categories
-    Object.keys(allModuleData).forEach((key: keyof ModuleData) => {
+    Object.keys(currentModuleData).forEach((key: keyof ModuleData) => {
       // check, if this module uses that category
       if (!data[key]) return;
 
