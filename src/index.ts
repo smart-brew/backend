@@ -66,7 +66,7 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
 });
 
 type WSClient = WebSocket & { isAlive: boolean; name: string };
-const clients: WSClient[] = [];
+var clients: WSClient[] = [];
 
 const allModuleData: ModuleData = {
   TEMPERATURE: [],
@@ -122,6 +122,8 @@ setInterval(() => {
       console.log(`Client "${client.name}" not alive, closing websocket!`);
 
       client.terminate();
+      clients = clients.filter((cl) => cl !== client);
+
       return;
     }
     client.isAlive = false;
