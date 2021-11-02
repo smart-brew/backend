@@ -3,12 +3,24 @@ import { db } from '../prismaClient';
 
 export const getAllRecipes = async (req: Request, res: Response) => {
   console.log(req.body);
-  res.json(await db.recipes.findMany({
-    include: {
+  res.json(await db.recipes.findMany({}));
+};
+
+export const getRecipe = async (req: Request, res: Response) => {
+  console.log(req.body);
+  res.json(await db.recipes.findUnique({
+    where:{
+      id: parseInt(req.params.recipeId),
+    },
+    include:{
       Ingredients: true,
-      Blocks: {
-        include: {
-          Instructions: true
+      Instructions:{
+        include:{
+          Blocks:{
+            select:{
+              name: true,
+            }
+          }
         }
       }
     }

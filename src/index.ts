@@ -2,7 +2,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
-import { createRecipe, getAllRecipes, loadRecipe } from './endpoints/recipes';
+import { createRecipe, getAllRecipes, getRecipe, loadRecipe } from './endpoints/recipes';
 
 import { getAllFunctions } from './endpoints/functions';
 
@@ -45,13 +45,15 @@ server.use(express.json());
 
 // ------- ENDPOINTS --------
 server.get('/api/recipe', getAllRecipes);
+server.get('/api/recipe/:recipeId', getRecipe);
+
 server.put('/api/recipe', createRecipe);
 server.post('/api/recipe/:recipeId/load', loadRecipe);
 
 server.get('/api/function', getAllFunctions);
 
 server.get('/api/brew', getAllBrews);
-server.get('/api/brew/:brewId', brewStatus);
+server.get('/api/brew/:brewId', brewStatus); //to iste co /api/data ?
 
 server.put('/api/brew/:recipeId/start', startBrewing);
 
