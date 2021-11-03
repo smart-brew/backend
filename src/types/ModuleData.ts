@@ -14,8 +14,10 @@ export type Motor = BasicData & {
   RPM: number;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type Unloader = BasicData & {};
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type Pump = BasicData & {};
 
 export type DataCategory = Temperature | Motor | Unloader | Pump;

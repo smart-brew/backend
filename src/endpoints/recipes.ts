@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { db } from '../prismaClient';
+import db from '../prismaClient';
 
 export const getAllRecipes = async (req: Request, res: Response) => {
   console.log(req.body);
@@ -8,23 +8,25 @@ export const getAllRecipes = async (req: Request, res: Response) => {
 
 export const getRecipe = async (req: Request, res: Response) => {
   console.log(req.body);
-  res.json(await db.recipes.findUnique({
-    where:{
-      id: parseInt(req.params.recipeId),
-    },
-    include:{
-      Ingredients: true,
-      Instructions:{
-        include:{
-          Blocks:{
-            select:{
-              name: true,
-            }
-          }
-        }
-      }
-    }
-  }));
+  res.json(
+    await db.recipes.findUnique({
+      where: {
+        id: parseInt(req.params.recipeId, 10),
+      },
+      include: {
+        Ingredients: true,
+        Instructions: {
+          include: {
+            Blocks: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    })
+  );
 };
 
 export const loadRecipe = (req: Request, res: Response) => {

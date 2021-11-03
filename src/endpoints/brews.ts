@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { db } from '../prismaClient';
+import db from '../prismaClient';
 
 export const brewStatus = (req: Request, res: Response) => {
   console.log(req.body);

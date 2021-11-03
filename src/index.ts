@@ -2,9 +2,14 @@ import { WebSocket, WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
-import { createRecipe, getAllRecipes, getRecipe, loadRecipe } from './endpoints/recipes';
+import {
+  createRecipe,
+  getAllRecipes,
+  getRecipe,
+  loadRecipe,
+} from './endpoints/recipes';
 
-import { getAllFunctions } from './endpoints/functions';
+import getAllFunctions from './endpoints/functions';
 
 import {
   abortBrew,
@@ -53,7 +58,7 @@ server.post('/api/recipe/:recipeId/load', loadRecipe);
 server.get('/api/function', getAllFunctions);
 
 server.get('/api/brew', getAllBrews);
-server.get('/api/brew/:brewId', brewStatus); //to iste co /api/data ?
+server.get('/api/brew/:brewId', brewStatus); // to iste co /api/data ?
 
 server.put('/api/brew/:recipeId/start', startBrewing);
 
@@ -69,7 +74,7 @@ server.get('/api/data', (req, res) => {
 });
 
 // backend server start
-server.listen(PORT, function () {
+server.listen(PORT, () => {
   console.log('HTTP Server is running on PORT:', PORT);
 });
 
@@ -79,12 +84,12 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
 });
 
 type WSClient = WebSocket & { isAlive: boolean; name: string };
-var clients: WSClient[] = [];
+let clients: WSClient[] = [];
 
 const updateData = (key: keyof ModuleData, newData: DataCategory) => {
   const cachedData: DataCategory[] = currentModuleData[key];
 
-  for (let i = 0; i < cachedData.length; i++) {
+  for (let i = 0; i < cachedData.length; i += 1) {
     if (cachedData[i].DEVICE === newData.DEVICE) {
       cachedData[i] = newData;
       return;
@@ -94,12 +99,13 @@ const updateData = (key: keyof ModuleData, newData: DataCategory) => {
 };
 
 wss.on('connection', (ws: WSClient) => {
+  const wsClient = ws;
   console.log('Client connected');
-  clients.push(ws);
+  clients.push(wsClient);
 
-  ws.on('message', (message) => {
+  wsClient.on('message', (message) => {
     const data: ReceivedModuleData = JSON.parse(message.toString());
-    ws.name = data.moduleId;
+    wsClient.name = data.moduleId;
 
     // iterate over all categories
     Object.keys(currentModuleData).forEach((key: keyof ModuleData) => {
@@ -113,26 +119,28 @@ wss.on('connection', (ws: WSClient) => {
     });
   });
 
-  ws.send('WS has succesfully connected to server');
+  wsClient.send('WS has succesfully connected to server');
 
-  ws.isAlive = true;
-  ws.on('pong', () => {
-    ws.isAlive = true;
+  wsClient.isAlive = true;
+  wsClient.on('pong', () => {
+    wsClient.isAlive = true;
   });
 });
 
 // keepalive for WS clients
 setInterval(() => {
   clients.forEach((client) => {
-    if (!client.isAlive) {
-      console.log(`Client "${client.name}" not alive, closing websocket!`);
+    const wsClient = client;
 
-      client.terminate();
-      clients = clients.filter((cl) => cl !== client);
+    if (!wsClient.isAlive) {
+      console.log(`Client "${wsClient.name}" not alive, closing websocket!`);
+
+      wsClient.terminate();
+      clients = clients.filter((cl) => cl !== wsClient);
 
       return;
     }
-    client.isAlive = false;
-    client.ping();
+    wsClient.isAlive = false;
+    wsClient.ping();
   });
 }, 10000);
