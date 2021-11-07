@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import db from '../prismaClient';
+import { setRecipe } from '../brewing';
 
 export const getAllRecipes = async (req: Request, res: Response) => {
   console.log(req.body);
@@ -29,15 +30,40 @@ export const getRecipe = async (req: Request, res: Response) => {
   );
 };
 
-export const loadRecipe = (req: Request, res: Response) => {
+export const loadRecipe = async (req: Request, res: Response) => {
   console.log(req.body);
-  res.status(200).send('TODO: loadRecepie');
+  const recipe = await db.recipes.findUnique({
+    where: {
+      id: parseInt(req.params.recipeId, 10),
+    },
+    include: {
+      Instructions: {
+        include: {
+          Function_templates:  {
+            select:{
+              code_name: true,
+              category: true,
+            }
+          },        
+          Function_options: {
+            select:{
+              code_name: true,
+              module: true,
+            }
+          },          
+        },
+      },
+    },
+  });
+  
+  setRecipe(recipe);
+  res.json(recipe);
 };
 
 export const createRecipe = async (req: Request, res: Response) => {
   console.log(req.body);
   const { name, description, locked } = req.body;
-  const instructions = req.body.Instructions.map((elem: any) => {
+  const instructions = req.body.Instructions.map(elem => {
     elem.Blocks = {
       connectOrCreate: {
         where: {
@@ -74,6 +100,9 @@ export const createRecipe = async (req: Request, res: Response) => {
         create: instructions
       },
     },
+    select:{
+      id: true,
+    }
   });
 
   res.json(result);
