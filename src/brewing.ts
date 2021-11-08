@@ -1,27 +1,24 @@
 import { DataCategory, ModuleData } from './types/ModuleData';
-
-const currentModuleData: ModuleData = {
-  TEMPERATURE: [],
-  MOTOR: [],
-  UNLOADER: [],
-  PUMP: [],
-};
+import { BreweryState } from './types/brewingTypes';
 
 let loadedRecipe;
-let brewId;
-let brewStatus;
-let currentInstruction;
+let brewId: number;
+const state: BreweryState = {
+  brewStatus: 'IDLE',
+  data: {
+    TEMPERATURE: [],
+    MOTOR: [],
+    UNLOADER: [],
+    PUMP: [],
+  },
+};
 
 export const getData = () => {
-  return {
-    data: currentModuleData,
-    instruction: currentInstruction,
-    brewStatus,
-  };
+  return state;
 };
 
 export const updateData = (key: keyof ModuleData, newData: DataCategory) => {
-  const cachedData: DataCategory[] = currentModuleData[key];
+  const cachedData: DataCategory[] = state.data[key];
 
   for (let i = 0; i < cachedData.length; i += 1) {
     if (cachedData[i].DEVICE === newData.DEVICE) {
@@ -39,9 +36,9 @@ export const setRecipe = (recipe) => {
 
 export const startBrewing = (id) => {
   brewId = id;
-  brewStatus = 'IN_PROGRESS';
-  currentInstruction = {
-    currentInstructionId: loadedRecipe.Instructions[0],
+  state.brewStatus = 'IN_PROGRESS';
+  state.instruction = {
+    currentInstructionID: loadedRecipe.Instructions[0],
     status: 'IN_PROGRESS',
   };
 };
