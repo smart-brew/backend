@@ -7,6 +7,8 @@
     "build": "yarn clean && tsc",
     "clean": "rimraf dist/*",
     "dev": "nodemon --watch src -e ts,js --exec yarn start:dev",
+    "format:eslint": "eslint \"**/*.{js,ts,tsx}\" --fix",
+    "format:prettier": "prettier \"**/*.{cjs,html,js,json,md,ts,tsx}\" --write",
     "migrate": "yarn dotenv -e .dev.env yarn prisma migrate dev",
     "seed": "yarn dotenv -e .dev.env yarn prisma db seed",
     "prepare": "husky install",
@@ -30,6 +32,7 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.2",
+    "lint-staged": "^11.2.6",
     "nodemon": "^2.0.14",
     "prettier": "^2.4.1",
     "prisma": "^3.3.0",
@@ -48,5 +51,11 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "ws": "^8.2.3"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }

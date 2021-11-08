@@ -39,23 +39,23 @@ export const loadRecipe = async (req: Request, res: Response) => {
     include: {
       Instructions: {
         include: {
-          Function_templates:  {
-            select:{
+          Function_templates: {
+            select: {
               code_name: true,
               category: true,
-            }
-          },        
+            },
+          },
           Function_options: {
-            select:{
+            select: {
               code_name: true,
               module: true,
-            }
-          },          
+            },
+          },
         },
       },
     },
   });
-  
+
   setRecipe(recipe);
   res.json(recipe);
 };
@@ -63,7 +63,7 @@ export const loadRecipe = async (req: Request, res: Response) => {
 export const createRecipe = async (req: Request, res: Response) => {
   console.log(req.body);
   const { name, description, locked } = req.body;
-  const instructions = req.body.Instructions.map(elem => {
+  const instructions = req.body.Instructions.map((elem) => {
     elem.Blocks = {
       connectOrCreate: {
         where: {
@@ -75,13 +75,13 @@ export const createRecipe = async (req: Request, res: Response) => {
       },
     };
 
-    elem.Function_templates = { connect: { id: elem.function_template_id } }
-    delete elem.function_template_id
+    elem.Function_templates = { connect: { id: elem.function_template_id } };
+    delete elem.function_template_id;
     delete elem.Block;
 
-    if (elem.hasOwnProperty("function_option_id")) {
-      elem.Function_options = { connect: { id: elem.function_option_id } }
-      delete elem.function_option_id
+    if (elem.function_option_id) {
+      elem.Function_options = { connect: { id: elem.function_option_id } };
+      delete elem.function_option_id;
     }
     return elem;
   });
@@ -97,12 +97,12 @@ export const createRecipe = async (req: Request, res: Response) => {
         },
       },
       Instructions: {
-        create: instructions
+        create: instructions,
       },
     },
-    select:{
+    select: {
       id: true,
-    }
+    },
   });
 
   res.json(result);

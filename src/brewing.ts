@@ -1,6 +1,6 @@
-var loadedRecipe;
+let loadedRecipe;
 
 export const setRecipe = (recipe) => {
-    loadedRecipe = recipe;
-    console.log(loadedRecipe);
-}
+  loadedRecipe = recipe;
+  console.log(loadedRecipe);
+};

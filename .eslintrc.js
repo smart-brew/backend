@@ -8,6 +8,8 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
+    'prettier/prettier',
+    'plugin:prettier/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -15,8 +17,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
-    'no-console': 1, // Means warning
-    'prettier/prettier': 2, // Means error
+    'no-console': 0,
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -25,7 +26,15 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'no-param-reassign': 'off',
     'no-shadow': 'off',
+    'import/prefer-default-export': 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
   },
   settings: {
     'import/resolver': {
