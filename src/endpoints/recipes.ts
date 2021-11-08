@@ -38,6 +38,9 @@ export const loadRecipe = async (req: Request, res: Response) => {
     },
     include: {
       Instructions: {
+        orderBy: {
+          ordering: 'asc',
+        },
         include: {
           Function_templates: {
             select: {
