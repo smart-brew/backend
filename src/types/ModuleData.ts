@@ -22,6 +22,13 @@ export type Pump = BasicData & {};
 
 export type DataCategory = Temperature | Motor | Unloader | Pump;
 
+export const CategoryKeys = [
+  'TEMPERATURE',
+  'MOTOR',
+  'UNLOADER',
+  'PUMP',
+] as const;
+
 export interface ModuleData {
   TEMPERATURE: Array<Temperature>;
   MOTOR: Array<Motor>;

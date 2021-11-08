@@ -1,25 +1,29 @@
 import { Request, Response } from 'express';
 import db from '../prismaClient';
+import { startBrewing, getData } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
   console.log(req.body);
-  res.json({
-    TEMP_1: {
-      TEMP: 30.2,
-    },
-  });
-  // res.status(200).send('TODO: Tu bude status nejakeho receptu...');
+  res.json(getData());
 };
 
-export const startBrewing = (req: Request, res: Response) => {
+export const startNewBrewing = async (req: Request, res: Response) => {
   console.log(req.body);
-  res.status(200).send('TODO: startBrewing');
+  const { recipeID } = req.body;
+  const result = await db.brewings.create({
+    data: {
+      Recipes: { connect: { id: recipeID } },
+    },
+    select: { id: true },
+  });
+
+  startBrewing(result.id);
+  res.json(result);
 };
 
 export const getAllBrews = async (req: Request, res: Response) => {
   console.log(req.body);
   res.json(await db.brewings.findMany());
-  // res.status(200).send('TODO: getAllBrews');
 };
 
 export const abortBrew = (req: Request, res: Response) => {

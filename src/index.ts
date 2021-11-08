@@ -2,6 +2,8 @@ import { WebSocket, WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
+import { updateData } from './brewing';
+
 import {
   createRecipe,
   getAllRecipes,
@@ -19,10 +21,11 @@ import {
   getAllBrews,
   pauseBrew,
   resumeBrew,
-  startBrewing,
+  startNewBrewing,
 } from './endpoints/brews';
+
 import {
-  DataCategory,
+  CategoryKeys,
   ModuleData,
   ReceivedModuleData,
 } from './types/ModuleData';
@@ -31,13 +34,6 @@ const PORT = 8000;
 const WS_PORT = 8001;
 
 const server = express();
-
-const currentModuleData: ModuleData = {
-  TEMPERATURE: [],
-  MOTOR: [],
-  UNLOADER: [],
-  PUMP: [],
-};
 
 // fix cors
 server.use(cors());
@@ -58,9 +54,10 @@ server.post('/api/recipe/:recipeId/load', loadRecipe);
 server.get('/api/function', getAllFunctions);
 
 server.get('/api/brew', getAllBrews);
-server.get('/api/brew/:brewId', brewStatus); // to iste co /api/data ?
 
-server.put('/api/brew/:recipeId/start', startBrewing);
+server.get('/api/data', brewStatus);
+
+server.put('/api/brew/:recipeId/start', startNewBrewing);
 
 server.post('/api/brew/:brewId/abort', abortBrew);
 server.post('/api/brew/:brewId/pause', pauseBrew);
@@ -68,10 +65,6 @@ server.post('/api/brew/:brewId/resume', resumeBrew);
 
 server.post('/api/brew/:brewId/step/:stepId', editBrewStep);
 server.post('/api/brew/:brewId/step/:stepId/confirm', confirmStep);
-
-server.get('/api/data', (req, res) => {
-  res.json(currentModuleData);
-});
 
 // backend server start
 server.listen(PORT, () => {
@@ -86,18 +79,6 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
 type WSClient = WebSocket & { isAlive: boolean; name: string };
 let clients: WSClient[] = [];
 
-const updateData = (key: keyof ModuleData, newData: DataCategory) => {
-  const cachedData: DataCategory[] = currentModuleData[key];
-
-  for (let i = 0; i < cachedData.length; i += 1) {
-    if (cachedData[i].DEVICE === newData.DEVICE) {
-      cachedData[i] = newData;
-      return;
-    }
-  }
-  cachedData.push(newData);
-};
-
 wss.on('connection', (ws: WSClient) => {
   const wsClient = ws;
   console.log('Client connected');
@@ -108,7 +89,7 @@ wss.on('connection', (ws: WSClient) => {
     wsClient.name = data.moduleId;
 
     // iterate over all categories
-    Object.keys(currentModuleData).forEach((key: keyof ModuleData) => {
+    CategoryKeys.forEach((key: keyof ModuleData) => {
       // check, if this module uses that category
       if (!data[key]) return;
 
