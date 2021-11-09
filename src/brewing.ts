@@ -1,13 +1,18 @@
+/* eslint-disable no-use-before-define */
+import db from './prismaClient';
+
 import {
   categoryKeys,
   DataCategory,
   ModuleData,
   ReceivedModuleData,
 } from './types/ModuleData';
+
 import { SystemData } from './types/SystemData';
 
 let loadedRecipe: any;
 let brewId: number;
+let instructionLogId: number;
 const state: SystemData = {
   data: {
     TEMPERATURE: [],
@@ -22,12 +27,20 @@ const state: SystemData = {
   brewStatus: 'IDLE',
 };
 
-export const getState = (): SystemData => {
-  return state;
+let statusLoggerInterval: NodeJS.Timeout;
+
+const statusLogger = async () => {
+  await db.status_logs.create({
+    data: {
+      status: state.brewStatus,
+      params: JSON.stringify(state.data),
+      Brewings: { connect: { id: brewId } },
+    },
+  });
 };
 
-export const getLoadedRecipe = () => {
-  return loadedRecipe || null;
+export const getState = (): SystemData => {
+  return state;
 };
 
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
@@ -60,13 +73,73 @@ export const setRecipe = (recipe: any) => {
   console.log(loadedRecipe);
 };
 
-export const startBrewing = (id: any) => {
+async function startInstruction() {
+  const result = await db.instruction_logs.create({
+    data: {
+      Instructions: { connect: { id: state.instruction.currentInstructionId } },
+      Brewings: { connect: { id: brewId } },
+    },
+    select: { id: true },
+  });
+  instructionLogId = result.id;
+  executeInstruction();
+}
+
+function executeInstruction() {
+  // TODO - send wsclient opcode and params
+}
+
+export const handleInstructionResponse = (res: any) => {
+  // TODO - handle response - finish or fail
+  finishInstruction();
+};
+
+async function finishInstruction() {
+  await db.instruction_logs.update({
+    where: {
+      id: instructionLogId,
+    },
+    data: {
+      finished: true,
+    },
+  });
+  moveToNextInstruction();
+}
+
+function moveToNextInstruction() {
+  // TODO - move to next one by ordering number or finishBrewing
+  startInstruction();
+}
+
+export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
     currentInstructionId: loadedRecipe.Instructions[0],
     status: 'IN_PROGRESS',
   };
+  statusLoggerInterval = setInterval(statusLogger, 1000);
+  startInstruction();
+};
+
+export const abortBrewing = () => {
+  // TODO
+  clearInterval(statusLoggerInterval);
+};
+
+export const pauseBrewing = () => {
+  // TODO
+  clearInterval(statusLoggerInterval);
+};
+
+export const resumeBrewing = () => {
+  // TODO
+  statusLoggerInterval = setInterval(statusLogger, 1000);
+};
+
+export const finishBrewing = () => {
+  // TODO
+  clearInterval(statusLoggerInterval);
 };
 
 export const checkInstructionStatus = (state: SystemData) => {
