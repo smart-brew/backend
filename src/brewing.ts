@@ -4,17 +4,25 @@ import { BreweryState } from './types/brewingTypes';
 let loadedRecipe;
 let brewId: number;
 const state: BreweryState = {
-  brewStatus: 'IDLE',
   data: {
     TEMPERATURE: [],
     MOTOR: [],
     UNLOADER: [],
     PUMP: [],
   },
+  instruction: {
+    currentInstructionID: null,
+    status: 'IDLE',
+  },
+  brewStatus: 'IDLE',
 };
 
-export const getData = () => {
+export const getState = () => {
   return state;
+};
+
+export const getLoadedRecipe = () => {
+  return loadedRecipe || null;
 };
 
 export const updateData = (key: keyof ModuleData, newData: DataCategory) => {
@@ -41,4 +49,9 @@ export const startBrewing = (id) => {
     currentInstructionID: loadedRecipe.Instructions[0],
     status: 'IN_PROGRESS',
   };
+};
+
+export const checkInstructionStatus = (state: BreweryState) => {
+  console.log('kontrola statu z aktualnej instrukcie z receptu');
+  return state;
 };

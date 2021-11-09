@@ -2,7 +2,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
-import { updateData } from './brewing';
+import { updateData, getState, checkInstructionStatus } from './brewing';
 
 import {
   createRecipe,
@@ -87,6 +87,8 @@ wss.on('connection', (ws: WSClient) => {
   wsClient.on('message', (message) => {
     const data: ReceivedModuleData = JSON.parse(message.toString());
     wsClient.name = data.moduleId;
+    console.log('Sprava prijata cez websocket!');
+    console.log(data);
 
     // iterate over all categories
     CategoryKeys.forEach((key: keyof ModuleData) => {
@@ -98,6 +100,11 @@ wss.on('connection', (ws: WSClient) => {
         updateData(key, dataPoint);
       });
     });
+    // update status of instructions
+    const state = getState();
+    if (state.brewStatus === 'IN_PROGRESS') {
+      checkInstructionStatus(state);
+    }
   });
 
   wsClient.send('WS has succesfully connected to server');
