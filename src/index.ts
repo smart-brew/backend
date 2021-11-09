@@ -1,8 +1,8 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
-import { updateData, getState, checkInstructionStatus } from './brewing';
+import { updateStatus, getState, checkInstructionStatus } from './brewing';
 
 import {
   createRecipe,
@@ -24,11 +24,8 @@ import {
   startNewBrewing,
 } from './endpoints/brews';
 
-import {
-  CategoryKeys,
-  ModuleData,
-  ReceivedModuleData,
-} from './types/ModuleData';
+import { ReceivedModuleData } from './types/ModuleData';
+import { WSClient } from './types/WebSocket';
 
 const PORT = 8000;
 const WS_PORT = 8001;
@@ -76,7 +73,6 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
   console.log('WS Server is running on PORT:', WS_PORT);
 });
 
-type WSClient = WebSocket & { isAlive: boolean; name: string };
 let clients: WSClient[] = [];
 
 wss.on('connection', (ws: WSClient) => {
@@ -90,16 +86,10 @@ wss.on('connection', (ws: WSClient) => {
     console.log('Sprava prijata cez websocket!');
     console.log(data);
 
-    // iterate over all categories
-    CategoryKeys.forEach((key: keyof ModuleData) => {
-      // check, if this module uses that category
-      if (!data[key]) return;
+    // update current system data, with the new data
+    updateStatus(data);
 
-      // update all cached data
-      data[key].forEach((dataPoint) => {
-        updateData(key, dataPoint);
-      });
-    });
+    // TODO - PETO - toto je asi zbytocne, lepsie bude, ked sa to spravi v tom: updateStatus(data)
     // update status of instructions
     const state = getState();
     if (state.brewStatus === 'IN_PROGRESS') {

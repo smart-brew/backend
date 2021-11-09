@@ -1,15 +1,9 @@
 import { Request, Response } from 'express';
 import db from '../prismaClient';
-import { startBrewing, getState, getLoadedRecipe } from '../brewing';
+import { startBrewing, getState } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
-  const loadedRecipe = getLoadedRecipe() || null;
-  const instructions = loadedRecipe?.Instructions;
   console.log('brew status');
-
-  console.log(loadedRecipe?.Instructions);
-  // todo naplnit datami z modulov
-  // todo zobrat z nacitaneho receptu instrukciu currentInstruction
   res.json(getState());
 };
 

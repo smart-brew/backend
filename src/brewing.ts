@@ -1,9 +1,14 @@
-import { DataCategory, ModuleData } from './types/ModuleData';
-import { BreweryState } from './types/brewingTypes';
+import {
+  categoryKeys,
+  DataCategory,
+  ModuleData,
+  ReceivedModuleData,
+} from './types/ModuleData';
+import { SystemData } from './types/SystemData';
 
 let loadedRecipe: any;
 let brewId: number;
-const state: BreweryState = {
+const state: SystemData = {
   data: {
     TEMPERATURE: [],
     MOTOR: [],
@@ -11,13 +16,13 @@ const state: BreweryState = {
     PUMP: [],
   },
   instruction: {
-    currentInstructionID: null,
-    status: 'IDLE',
+    currentInstructionId: 0,
+    status: 'WAITING',
   },
   brewStatus: 'IDLE',
 };
 
-export const getState = () => {
+export const getState = (): SystemData => {
   return state;
 };
 
@@ -25,16 +30,29 @@ export const getLoadedRecipe = () => {
   return loadedRecipe || null;
 };
 
-export const updateData = (key: keyof ModuleData, newData: DataCategory) => {
-  const cachedData: DataCategory[] = state.data[key];
+const updateData = (category: keyof ModuleData, newData: DataCategory) => {
+  const currentCategoryState: DataCategory[] = state.data[category];
 
-  for (let i = 0; i < cachedData.length; i += 1) {
-    if (cachedData[i].DEVICE === newData.DEVICE) {
-      cachedData[i] = newData;
+  for (let i = 0; i < currentCategoryState.length; i += 1) {
+    if (currentCategoryState[i].DEVICE === newData.DEVICE) {
+      currentCategoryState[i] = newData;
       return;
     }
   }
-  cachedData.push(newData);
+  currentCategoryState.push(newData);
+};
+
+export const updateStatus = (newData: ReceivedModuleData) => {
+  // iterate over all categories
+  categoryKeys.forEach((category: keyof ModuleData) => {
+    // check, if this module uses that category
+    if (!newData[category]) return;
+
+    // update all cached data
+    newData[category].forEach((newDataPoint) => {
+      updateData(category, newDataPoint);
+    });
+  });
 };
 
 export const setRecipe = (recipe: any) => {
@@ -46,12 +64,12 @@ export const startBrewing = (id: any) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
-    currentInstructionID: loadedRecipe.Instructions[0],
+    currentInstructionId: loadedRecipe.Instructions[0],
     status: 'IN_PROGRESS',
   };
 };
 
-export const checkInstructionStatus = (state: BreweryState) => {
+export const checkInstructionStatus = (state: SystemData) => {
   console.log('kontrola statu z aktualnej instrukcie z receptu');
   return state;
 };
