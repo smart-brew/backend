@@ -52,6 +52,6 @@ export const startBrewing = (id) => {
 };
 
 export const checkInstructionStatus = (state: BreweryState) => {
-  console.log('kontrola statu z aktualnej instrukcie z receptt');
+  console.log('kontrola statu z aktualnej instrukcie z receptu');
   return state;
 };
