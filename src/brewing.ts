@@ -1,7 +1,7 @@
 import { DataCategory, ModuleData } from './types/ModuleData';
 import { BreweryState } from './types/brewingTypes';
 
-let loadedRecipe;
+let loadedRecipe: any;
 let brewId: number;
 const state: BreweryState = {
   data: {
@@ -37,12 +37,12 @@ export const updateData = (key: keyof ModuleData, newData: DataCategory) => {
   cachedData.push(newData);
 };
 
-export const setRecipe = (recipe) => {
+export const setRecipe = (recipe: any) => {
   loadedRecipe = recipe;
   console.log(loadedRecipe);
 };
 
-export const startBrewing = (id) => {
+export const startBrewing = (id: any) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {

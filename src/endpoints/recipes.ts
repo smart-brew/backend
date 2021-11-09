@@ -66,7 +66,7 @@ export const loadRecipe = async (req: Request, res: Response) => {
 export const createRecipe = async (req: Request, res: Response) => {
   console.log(req.body);
   const { name, description, locked } = req.body;
-  const instructions = req.body.Instructions.map((elem) => {
+  const instructions = req.body.Instructions.map((elem: any) => {
     elem.Blocks = {
       connectOrCreate: {
         where: {

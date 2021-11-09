@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": ["esnext"],
     "esModuleInterop": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
