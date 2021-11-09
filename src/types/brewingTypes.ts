@@ -8,7 +8,7 @@ export type brewingStatus =
   | 'ABORTED'
   | 'FINISHED';
 
-export type instructionStatus = 'IN_PROGRESS' | 'ERROR' | 'PAUSED';
+export type instructionStatus = 'IN_PROGRESS' | 'ERROR' | 'PAUSED' | 'IDLE';
 
 export interface currentInstruction {
   currentInstructionID: number;
