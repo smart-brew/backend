@@ -39,10 +39,6 @@ const statusLogger = async () => {
   });
 };
 
-export const getState = (): SystemData => {
-  return state;
-};
-
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   const currentCategoryState: DataCategory[] = state.data[category];
 
@@ -53,6 +49,11 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
     }
   }
   currentCategoryState.push(newData);
+};
+
+const checkInstructionStatus = (state: SystemData) => {
+  console.log('kontrola statu z aktualnej instrukcie z receptu');
+  return state;
 };
 
 export const updateStatus = (newData: ReceivedModuleData) => {
@@ -66,6 +67,11 @@ export const updateStatus = (newData: ReceivedModuleData) => {
       updateData(category, newDataPoint);
     });
   });
+
+  // update status of instructions
+  if (state.brewStatus === 'IN_PROGRESS') {
+    checkInstructionStatus(state);
+  }
 };
 
 export const setRecipe = (recipe: any) => {
@@ -140,9 +146,4 @@ export const resumeBrewing = () => {
 export const finishBrewing = () => {
   // TODO
   clearInterval(statusLoggerInterval);
-};
-
-export const checkInstructionStatus = (state: SystemData) => {
-  console.log('kontrola statu z aktualnej instrukcie z receptu');
-  return state;
 };

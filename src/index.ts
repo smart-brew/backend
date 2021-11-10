@@ -2,7 +2,7 @@ import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
-import { updateStatus, getState, checkInstructionStatus } from './brewing';
+import { updateStatus } from './brewing';
 
 import {
   createRecipe,
@@ -88,13 +88,6 @@ wss.on('connection', (ws: WSClient) => {
 
     // update current system data, with the new data
     updateStatus(data);
-
-    // TODO - PETO - toto je asi zbytocne, lepsie bude, ked sa to spravi v tom: updateStatus(data)
-    // update status of instructions
-    const state = getState();
-    if (state.brewStatus === 'IN_PROGRESS') {
-      checkInstructionStatus(state);
-    }
   });
 
   wsClient.send('WS has succesfully connected to server');
