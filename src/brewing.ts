@@ -93,15 +93,14 @@ const getCurrentInstruction = () => {
 };
 
 async function startInstruction(instruction: any) {
-  // TODO - fixnut logovanie lebo pada server
-  // const result = await db.instruction_logs.create({
-  //   data: {
-  //     Instructions: { connect: { id: state.instruction.currentInstructionId } },
-  //     Brewings: { connect: { id: brewId } },
-  //   },
-  //   select: { id: true },
-  // });
-  // instructionLogId = result.id;
+  const result = await db.instruction_logs.create({
+    data: {
+      Instructions: { connect: { id: state.instruction.currentInstructionId } },
+      Brewings: { connect: { id: brewId } },
+    },
+    select: { id: true },
+  });
+  instructionLogId = result.id;
   executeInstruction(instruction);
 }
 // sends instruction to module via websocket
@@ -190,7 +189,7 @@ export const startBrewing = (id: number) => {
     currentInstructionId: loadedRecipe?.Instructions[0].id,
     status: 'IN_PROGRESS',
   };
-  // statusLoggerInterval = setInterval(statusLogger, 1000);
+  statusLoggerInterval = setInterval(statusLogger, 1000);
   startInstruction(getCurrentInstruction());
 };
 
