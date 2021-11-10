@@ -86,7 +86,7 @@ export const getState = () => {
   return state;
 };
 
-async function startInstruction() {
+async function startInstruction(instruction: any) {
   // const result = await db.instruction_logs.create({
   //   data: {
   //     Instructions: { connect: { id: state.instruction.currentInstructionId } },
@@ -95,9 +95,12 @@ async function startInstruction() {
   //   select: { id: true },
   // });
   // instructionLogId = result.id;
-  executeInstruction();
+  // todo zistit zo statu aktualnu instrukciu
+  // state.instruction.currentInstructionId
+  // loadedRecipe.
+  executeInstruction(instruction);
 }
-
+// sends instruction to module via websocket
 function executeInstruction(instruction: any) {
   // TODO - send wsclient opcode and params
 
@@ -131,9 +134,30 @@ async function finishInstruction() {
   moveToNextInstruction();
 }
 
+// move state for current id instruction
 function moveToNextInstruction() {
-  // TODO - move to next one by ordering number or finishBrewing
-  startInstruction();
+  //  move to next one by ordering number or finishBrewing
+
+  // get current instruction
+  const currentInstruction = loadedRecipe.Instruction.filter(
+    (instr: any) => instr.id === state.instruction.currentInstructionId
+  )?.[0];
+
+  // we find next instruction
+  const newInstruction = loadedRecipe.Instruction.filter(
+    (instr: any) => instr.order === currentInstruction.order + 1
+  )?.[0];
+
+  if (newInstruction) {
+    state.instruction.currentInstructionId = newInstruction.id;
+  } else {
+    // if next instruction wasn't found
+    state.brewStatus = 'FINISHED';
+    state.instruction = {
+      currentInstructionId: 0,
+      status: 'WAITING',
+    };
+  }
 }
 
 export const startBrewing = (id: number) => {
@@ -144,7 +168,7 @@ export const startBrewing = (id: number) => {
     status: 'IN_PROGRESS',
   };
   // statusLoggerInterval = setInterval(statusLogger, 1000);
-  startInstruction();
+  startInstruction(loadedRecipe.Instructions[0]);
 };
 
 export const abortBrewing = () => {
