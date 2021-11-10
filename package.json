@@ -12,8 +12,8 @@
     "migrate": "yarn dotenv -e .dev.env yarn prisma migrate dev",
     "seed": "yarn dotenv -e .dev.env yarn prisma db seed",
     "prepare": "husky install",
-    "start": "yarn dotenv -e .dev.env node .",
-    "start:dev": "yarn build && yarn start"
+    "start": "node .",
+    "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
