@@ -86,6 +86,12 @@ export const getState = () => {
   return state;
 };
 
+const getCurrentInstruction = () => {
+  return loadedRecipe.Instruction.filter(
+    (instr: any) => instr.id === state.instruction.currentInstructionId
+  )?.[0];
+};
+
 async function startInstruction(instruction: any) {
   // const result = await db.instruction_logs.create({
   //   data: {
@@ -103,15 +109,37 @@ async function startInstruction(instruction: any) {
 // sends instruction to module via websocket
 function executeInstruction(instruction: any) {
   // TODO - send wsclient opcode and params
+  // TODO - make ts definition for instruction
+  // const instruction = {
+  //   id: 53,
+  //   recipe_id: 37,
+  //   block_id: 2,
+  //   function_template_id: 1,
+  //   function_option_id: 1,
+  //   ordering: 1,
+  //   param: {
+  //     temp: '100',
+  //   },
+  //   created_at: '2021-11-09T07:50:22.509Z',
+  //   updated_at: '2021-11-09T07:50:22.511Z',
+  //   Function_templates: {
+  //     code_name: 'SET_TEMPERATURE',
+  //     category: 'TEMPERATURE',
+  //   },
+  //   Function_options: {
+  //     code_name: 'TEMP_1',
+  //     module: 1,
+  //   },
+  // };
 
   clients.forEach((client) =>
     client.send(
       JSON.stringify({
-        moduleId: 1,
-        DEVICE: 'TEMP_1',
-        CATEGORY: 'TEMPERATURE',
-        INSTRUCTION: 'SET_TEMPERATURE',
-        PARAMS: '27',
+        moduleId: instruction.Function_options.module,
+        DEVICE: instruction.Function_options.code_name,
+        CATEGORY: instruction.Function_templates.category,
+        INSTRUCTION: instruction.Function_templates.code_name,
+        PARAMS: Object.values(instruction.param)[0],
       })
     )
   );
@@ -134,14 +162,10 @@ async function finishInstruction() {
   moveToNextInstruction();
 }
 
-// move state for current id instruction
+//  move to next one by ordering number or finishBrewing
 function moveToNextInstruction() {
-  //  move to next one by ordering number or finishBrewing
-
   // get current instruction
-  const currentInstruction = loadedRecipe.Instruction.filter(
-    (instr: any) => instr.id === state.instruction.currentInstructionId
-  )?.[0];
+  const currentInstruction = getCurrentInstruction();
 
   // we find next instruction
   const newInstruction = loadedRecipe.Instruction.filter(
@@ -168,7 +192,7 @@ export const startBrewing = (id: number) => {
     status: 'IN_PROGRESS',
   };
   // statusLoggerInterval = setInterval(statusLogger, 1000);
-  startInstruction(loadedRecipe.Instructions[0]);
+  startInstruction(getCurrentInstruction());
 };
 
 export const abortBrewing = () => {
