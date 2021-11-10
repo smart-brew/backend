@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+import { clients } from './modules';
 import db from './prismaClient';
 
 import {
@@ -51,8 +52,14 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   currentCategoryState.push(newData);
 };
 
+// check if instructions pushed to modules were finished
 const checkInstructionStatus = (state: SystemData) => {
-  console.log('kontrola statu z aktualnej instrukcie z receptu');
+  // update status of instructions
+  if (state.brewStatus === 'IN_PROGRESS') {
+    console.log('kontrola statu z aktualnej instrukcie z receptu');
+    // loadedRecipe state.instruction.currentInstructionId
+    //
+  }
   return state;
 };
 
@@ -67,11 +74,7 @@ export const updateStatus = (newData: ReceivedModuleData) => {
       updateData(category, newDataPoint);
     });
   });
-
-  // update status of instructions
-  if (state.brewStatus === 'IN_PROGRESS') {
-    checkInstructionStatus(state);
-  }
+  checkInstructionStatus(state);
 };
 
 export const setRecipe = (recipe: any) => {
@@ -79,20 +82,36 @@ export const setRecipe = (recipe: any) => {
   console.log(loadedRecipe);
 };
 
+export const getState = () => {
+  return state;
+};
+
 async function startInstruction() {
-  const result = await db.instruction_logs.create({
-    data: {
-      Instructions: { connect: { id: state.instruction.currentInstructionId } },
-      Brewings: { connect: { id: brewId } },
-    },
-    select: { id: true },
-  });
-  instructionLogId = result.id;
+  // const result = await db.instruction_logs.create({
+  //   data: {
+  //     Instructions: { connect: { id: state.instruction.currentInstructionId } },
+  //     Brewings: { connect: { id: brewId } },
+  //   },
+  //   select: { id: true },
+  // });
+  // instructionLogId = result.id;
   executeInstruction();
 }
 
-function executeInstruction() {
+function executeInstruction(instruction: any) {
   // TODO - send wsclient opcode and params
+
+  clients.forEach((client) =>
+    client.send(
+      JSON.stringify({
+        moduleId: 1,
+        DEVICE: 'TEMP_1',
+        CATEGORY: 'TEMPERATURE',
+        INSTRUCTION: 'SET_TEMPERATURE',
+        PARAMS: '27',
+      })
+    )
+  );
 }
 
 export const handleInstructionResponse = (res: any) => {
@@ -121,10 +140,10 @@ export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
-    currentInstructionId: loadedRecipe.Instructions[0],
+    currentInstructionId: loadedRecipe.Instructions[0].id,
     status: 'IN_PROGRESS',
   };
-  statusLoggerInterval = setInterval(statusLogger, 1000);
+  // statusLoggerInterval = setInterval(statusLogger, 1000);
   startInstruction();
 };
 

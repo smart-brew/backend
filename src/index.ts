@@ -1,6 +1,7 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
+import { clients } from './modules';
 
 import { updateStatus } from './brewing';
 
@@ -73,8 +74,6 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
   console.log('WS Server is running on PORT:', WS_PORT);
 });
 
-let clients: WSClient[] = [];
-
 wss.on('connection', (ws: WSClient) => {
   const wsClient = ws;
   console.log('Client connected');
@@ -107,8 +106,10 @@ setInterval(() => {
       console.log(`Client "${wsClient.name}" not alive, closing websocket!`);
 
       wsClient.terminate();
-      clients = clients.filter((cl) => cl !== wsClient);
-
+      const index = clients.indexOf(wsClient);
+      if (index > -1) {
+        clients.splice(index, 1);
+      }
       return;
     }
     wsClient.isAlive = false;
