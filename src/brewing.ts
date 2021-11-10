@@ -115,7 +115,7 @@ export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
-    currentInstructionId: loadedRecipe.Instructions[0],
+    currentInstructionId: loadedRecipe.Instructions[0].id,
     status: 'IN_PROGRESS',
   };
   statusLoggerInterval = setInterval(statusLogger, 1000);
