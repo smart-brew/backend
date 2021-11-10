@@ -87,12 +87,13 @@ export const getState = () => {
 };
 
 const getCurrentInstruction = () => {
-  return loadedRecipe.Instruction.filter(
+  return loadedRecipe.Instructions.filter(
     (instr: any) => instr.id === state.instruction.currentInstructionId
   )?.[0];
 };
 
 async function startInstruction(instruction: any) {
+  // TODO - fixnut logovanie lebo pada server
   // const result = await db.instruction_logs.create({
   //   data: {
   //     Instructions: { connect: { id: state.instruction.currentInstructionId } },
@@ -101,9 +102,6 @@ async function startInstruction(instruction: any) {
   //   select: { id: true },
   // });
   // instructionLogId = result.id;
-  // todo zistit zo statu aktualnu instrukciu
-  // state.instruction.currentInstructionId
-  // loadedRecipe.
   executeInstruction(instruction);
 }
 // sends instruction to module via websocket
@@ -168,7 +166,7 @@ function moveToNextInstruction() {
   const currentInstruction = getCurrentInstruction();
 
   // we find next instruction
-  const newInstruction = loadedRecipe.Instruction.filter(
+  const newInstruction = loadedRecipe.Instructions.filter(
     (instr: any) => instr.order === currentInstruction.order + 1
   )?.[0];
 
@@ -188,7 +186,8 @@ export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
-    currentInstructionId: loadedRecipe.Instructions[0].id,
+    // todo sort by order
+    currentInstructionId: loadedRecipe?.Instructions[0].id,
     status: 'IN_PROGRESS',
   };
   // statusLoggerInterval = setInterval(statusLogger, 1000);
