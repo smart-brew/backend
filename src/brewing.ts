@@ -2,18 +2,20 @@
 import { clients } from './modules';
 import db from './prismaClient';
 
+import { Instruction } from './types/Instruction';
 import {
   categoryKeys,
   DataCategory,
   ModuleData,
   ReceivedModuleData,
 } from './types/ModuleData';
-
+import { Recipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
 
-let loadedRecipe: any;
+let loadedRecipe: Recipe;
 let brewId: number;
 let instructionLogId: number;
+
 const state: SystemData = {
   data: {
     TEMPERATURE: [],
@@ -77,7 +79,7 @@ export const updateStatus = (newData: ReceivedModuleData) => {
   checkInstructionStatus(state);
 };
 
-export const setRecipe = (recipe: any) => {
+export const setRecipe = (recipe: Recipe) => {
   loadedRecipe = recipe;
   console.log(loadedRecipe);
 };
@@ -87,12 +89,12 @@ export const getState = () => {
 };
 
 const getCurrentInstruction = () => {
-  return loadedRecipe.Instructions.filter(
-    (instr: any) => instr.id === state.instruction.currentInstructionId
-  )?.[0];
+  return loadedRecipe.Instructions.find(
+    (instr) => instr.id === state.instruction.currentInstructionId
+  );
 };
 
-async function startInstruction(instruction: any) {
+async function startInstruction(instruction: Instruction) {
   // TODO - fixnut logovanie lebo pada server
   // const result = await db.instruction_logs.create({
   //   data: {
@@ -105,7 +107,7 @@ async function startInstruction(instruction: any) {
   executeInstruction(instruction);
 }
 // sends instruction to module via websocket
-function executeInstruction(instruction: any) {
+function executeInstruction(instruction: Instruction) {
   // TODO - send wsclient opcode and params
   // TODO - make ts definition for instruction
   // const instruction = {
@@ -137,16 +139,17 @@ function executeInstruction(instruction: any) {
         DEVICE: instruction.Function_options.code_name,
         CATEGORY: instruction.Function_templates.category,
         INSTRUCTION: instruction.Function_templates.code_name,
-        PARAMS: Object.values(instruction.param)[0],
+        PARAMS: Object.values(instruction.param)[0], // TODO - Peto - Toto nejako lepsie vymysliet - ziskat z toho template ze presne ako sa to vola ten param
       })
     )
   );
 }
 
-export const handleInstructionResponse = (res: any) => {
-  // TODO - handle response - finish or fail
-  finishInstruction();
-};
+// TODO - Peto - Naco je toto? nepouziva sa to nikde
+// export const handleInstructionResponse = (res: any) => {
+//   // TODO - handle response - finish or fail
+//   finishInstruction();
+// };
 
 async function finishInstruction() {
   await db.instruction_logs.update({
@@ -167,7 +170,7 @@ function moveToNextInstruction() {
 
   // we find next instruction
   const newInstruction = loadedRecipe.Instructions.filter(
-    (instr: any) => instr.order === currentInstruction.order + 1
+    (instr) => instr.ordering === currentInstruction.ordering + 1
   )?.[0];
 
   if (newInstruction) {
@@ -186,7 +189,6 @@ export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
-    // todo sort by order
     currentInstructionId: loadedRecipe?.Instructions[0].id,
     status: 'IN_PROGRESS',
   };
