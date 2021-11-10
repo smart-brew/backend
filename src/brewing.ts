@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+import { clients } from './modules';
 import db from './prismaClient';
 
 import {
@@ -39,10 +40,6 @@ const statusLogger = async () => {
   });
 };
 
-export const getState = (): SystemData => {
-  return state;
-};
-
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   const currentCategoryState: DataCategory[] = state.data[category];
 
@@ -53,6 +50,17 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
     }
   }
   currentCategoryState.push(newData);
+};
+
+// check if instructions pushed to modules were finished
+const checkInstructionStatus = (state: SystemData) => {
+  // update status of instructions
+  if (state.brewStatus === 'IN_PROGRESS') {
+    console.log('kontrola statu z aktualnej instrukcie z receptu');
+    // loadedRecipe state.instruction.currentInstructionId
+    //
+  }
+  return state;
 };
 
 export const updateStatus = (newData: ReceivedModuleData) => {
@@ -66,6 +74,7 @@ export const updateStatus = (newData: ReceivedModuleData) => {
       updateData(category, newDataPoint);
     });
   });
+  checkInstructionStatus(state);
 };
 
 export const setRecipe = (recipe: any) => {
@@ -73,20 +82,65 @@ export const setRecipe = (recipe: any) => {
   console.log(loadedRecipe);
 };
 
-async function startInstruction() {
-  const result = await db.instruction_logs.create({
-    data: {
-      Instructions: { connect: { id: state.instruction.currentInstructionId } },
-      Brewings: { connect: { id: brewId } },
-    },
-    select: { id: true },
-  });
-  instructionLogId = result.id;
-  executeInstruction();
-}
+export const getState = () => {
+  return state;
+};
 
-function executeInstruction() {
+const getCurrentInstruction = () => {
+  return loadedRecipe.Instructions.filter(
+    (instr: any) => instr.id === state.instruction.currentInstructionId
+  )?.[0];
+};
+
+async function startInstruction(instruction: any) {
+  // TODO - fixnut logovanie lebo pada server
+  // const result = await db.instruction_logs.create({
+  //   data: {
+  //     Instructions: { connect: { id: state.instruction.currentInstructionId } },
+  //     Brewings: { connect: { id: brewId } },
+  //   },
+  //   select: { id: true },
+  // });
+  // instructionLogId = result.id;
+  executeInstruction(instruction);
+}
+// sends instruction to module via websocket
+function executeInstruction(instruction: any) {
   // TODO - send wsclient opcode and params
+  // TODO - make ts definition for instruction
+  // const instruction = {
+  //   id: 53,
+  //   recipe_id: 37,
+  //   block_id: 2,
+  //   function_template_id: 1,
+  //   function_option_id: 1,
+  //   ordering: 1,
+  //   param: {
+  //     temp: '100',
+  //   },
+  //   created_at: '2021-11-09T07:50:22.509Z',
+  //   updated_at: '2021-11-09T07:50:22.511Z',
+  //   Function_templates: {
+  //     code_name: 'SET_TEMPERATURE',
+  //     category: 'TEMPERATURE',
+  //   },
+  //   Function_options: {
+  //     code_name: 'TEMP_1',
+  //     module: 1,
+  //   },
+  // };
+
+  clients.forEach((client) =>
+    client.send(
+      JSON.stringify({
+        moduleId: instruction.Function_options.module,
+        DEVICE: instruction.Function_options.code_name,
+        CATEGORY: instruction.Function_templates.category,
+        INSTRUCTION: instruction.Function_templates.code_name,
+        PARAMS: Object.values(instruction.param)[0],
+      })
+    )
+  );
 }
 
 export const handleInstructionResponse = (res: any) => {
@@ -106,20 +160,38 @@ async function finishInstruction() {
   moveToNextInstruction();
 }
 
+//  move to next one by ordering number or finishBrewing
 function moveToNextInstruction() {
-  // TODO - move to next one by ordering number or finishBrewing
-  startInstruction();
+  // get current instruction
+  const currentInstruction = getCurrentInstruction();
+
+  // we find next instruction
+  const newInstruction = loadedRecipe.Instructions.filter(
+    (instr: any) => instr.order === currentInstruction.order + 1
+  )?.[0];
+
+  if (newInstruction) {
+    state.instruction.currentInstructionId = newInstruction.id;
+  } else {
+    // if next instruction wasn't found
+    state.brewStatus = 'FINISHED';
+    state.instruction = {
+      currentInstructionId: 0,
+      status: 'WAITING',
+    };
+  }
 }
 
 export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   state.instruction = {
-    currentInstructionId: loadedRecipe.Instructions[0].id,
+    // todo sort by order
+    currentInstructionId: loadedRecipe?.Instructions[0].id,
     status: 'IN_PROGRESS',
   };
-  statusLoggerInterval = setInterval(statusLogger, 1000);
-  startInstruction();
+  // statusLoggerInterval = setInterval(statusLogger, 1000);
+  startInstruction(getCurrentInstruction());
 };
 
 export const abortBrewing = () => {
@@ -140,9 +212,4 @@ export const resumeBrewing = () => {
 export const finishBrewing = () => {
   // TODO
   clearInterval(statusLoggerInterval);
-};
-
-export const checkInstructionStatus = (state: SystemData) => {
-  console.log('kontrola statu z aktualnej instrukcie z receptu');
-  return state;
 };

@@ -1,8 +1,9 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
+import { clients } from './modules';
 
-import { updateStatus, getState, checkInstructionStatus } from './brewing';
+import { updateStatus } from './brewing';
 
 import {
   createRecipe,
@@ -73,8 +74,6 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
   console.log('WS Server is running on PORT:', WS_PORT);
 });
 
-let clients: WSClient[] = [];
-
 wss.on('connection', (ws: WSClient) => {
   const wsClient = ws;
   console.log('Client connected');
@@ -88,13 +87,6 @@ wss.on('connection', (ws: WSClient) => {
 
     // update current system data, with the new data
     updateStatus(data);
-
-    // TODO - PETO - toto je asi zbytocne, lepsie bude, ked sa to spravi v tom: updateStatus(data)
-    // update status of instructions
-    const state = getState();
-    if (state.brewStatus === 'IN_PROGRESS') {
-      checkInstructionStatus(state);
-    }
   });
 
   wsClient.send('WS has succesfully connected to server');
@@ -114,8 +106,10 @@ setInterval(() => {
       console.log(`Client "${wsClient.name}" not alive, closing websocket!`);
 
       wsClient.terminate();
-      clients = clients.filter((cl) => cl !== wsClient);
-
+      const index = clients.indexOf(wsClient);
+      if (index > -1) {
+        clients.splice(index, 1);
+      }
       return;
     }
     wsClient.isAlive = false;
