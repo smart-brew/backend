@@ -1,13 +1,22 @@
-# backend
+# Backend
 
-After push on `main`, automatically connect to Raspberry Pi via SSH and execute folloving script:
+## Startup
+
+```bash
+docker compose up --build --detach
+```
+
+## Deploy
+
+Handled using Github Actions (more info: `/.github/workflows/update.yml`)
+
+After push on `main`, automatically connect to Raspberry Pi via SSH and execute following script:
 
 ```bash
 cd /home/pi/backend
 git pull
-ls -la
 docker-compose build
-docker-compose up
+docker-compose up --detach
 ```
 
 ## Development
