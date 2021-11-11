@@ -37,6 +37,6 @@ export const categoryKeys: (keyof ModuleData)[] = [
 ];
 
 export type ReceivedModuleData = Partial<ModuleData> & {
-  moduleId: string;
-  status: string;
+  moduleId: number;
+  status: Status;
 };

@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { clients } from './modules';
+import { sendInstruction } from './index';
 import db from './prismaClient';
 
 import { Instruction } from './types/Instruction';
@@ -54,17 +54,6 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   currentCategoryState.push(newData);
 };
 
-// check if instructions pushed to modules were finished
-const checkInstructionStatus = (state: SystemData) => {
-  // update status of instructions
-  if (state.brewStatus === 'IN_PROGRESS') {
-    console.log('kontrola statu z aktualnej instrukcie z receptu');
-    // loadedRecipe state.instruction.currentInstructionId
-    //
-  }
-  return state;
-};
-
 export const updateStatus = (newData: ReceivedModuleData) => {
   // iterate over all categories
   categoryKeys.forEach((category: keyof ModuleData) => {
@@ -76,7 +65,7 @@ export const updateStatus = (newData: ReceivedModuleData) => {
       updateData(category, newDataPoint);
     });
   });
-  checkInstructionStatus(state);
+  handleInstructionResponse(newData);
 };
 
 export const setRecipe = (recipe: Recipe) => {
@@ -88,13 +77,7 @@ export const getState = () => {
   return state;
 };
 
-const getCurrentInstruction = () => {
-  return loadedRecipe.Instructions.find(
-    (instr) => instr.id === state.instruction.currentInstructionId
-  );
-};
-
-async function startInstruction(instruction: Instruction) {
+async function startInstruction() {
   const result = await db.instruction_logs.create({
     data: {
       Instructions: { connect: { id: state.instruction.currentInstructionId } },
@@ -103,52 +86,36 @@ async function startInstruction(instruction: Instruction) {
     select: { id: true },
   });
   instructionLogId = result.id;
-  executeInstruction(instruction);
+
+  state.instruction = {
+    currentInstructionId: loadedRecipe.Instructions[0].id,
+    status: 'IN_PROGRESS',
+  };
+
+  executeInstruction();
 }
 // sends instruction to module via websocket
-function executeInstruction(instruction: Instruction) {
-  // TODO - send wsclient opcode and params
-  // TODO - make ts definition for instruction
-  // const instruction = {
-  //   id: 53,
-  //   recipe_id: 37,
-  //   block_id: 2,
-  //   function_template_id: 1,
-  //   function_option_id: 1,
-  //   ordering: 1,
-  //   param: {
-  //     temp: '100',
-  //   },
-  //   created_at: '2021-11-09T07:50:22.509Z',
-  //   updated_at: '2021-11-09T07:50:22.511Z',
-  //   Function_templates: {
-  //     code_name: 'SET_TEMPERATURE',
-  //     category: 'TEMPERATURE',
-  //   },
-  //   Function_options: {
-  //     code_name: 'TEMP_1',
-  //     module: 1,
-  //   },
-  // };
-
-  clients.forEach((client) =>
-    client.send(
-      JSON.stringify({
-        moduleId: instruction.Function_options.module,
-        DEVICE: instruction.Function_options.code_name,
-        CATEGORY: instruction.Function_templates.category,
-        INSTRUCTION: instruction.Function_templates.code_name,
-        PARAMS: Object.values(instruction.param)[0], // TODO - Peto - Toto nejako lepsie vymysliet - ziskat z toho template ze presne ako sa to vola ten param
-      })
-    )
-  );
+function executeInstruction() {
+  const currInst = loadedRecipe.Instructions[0];
+  const moduleID = currInst.Function_options.module;
+  const data = JSON.stringify({
+    moduleId: currInst.Function_options.module,
+    DEVICE: currInst.Function_options.code_name,
+    CATEGORY: currInst.Function_templates.category,
+    INSTRUCTION: currInst.Function_templates.code_name,
+    PARAMS: Object.values(currInst.param)[0], // TODO - Peto - Toto nejako lepsie vymysliet - ziskat z toho template ze presne ako sa to vola ten param
+  });
+  sendInstruction(moduleID, data);
 }
 
-// TODO - Peto - Naco je toto? nepouziva sa to nikde
-// export const handleInstructionResponse = (res: any) => {
-//   // TODO - handle response - finish or fail
-//   finishInstruction();
-// };
+function handleInstructionResponse(response: ReceivedModuleData) {
+  state.instruction.status = response.status;
+  if (state.instruction.status === 'ERROR') {
+    state.brewStatus = 'ERROR';
+    // TODO Error handle
+  }
+  finishInstruction();
+}
 
 async function finishInstruction() {
   await db.instruction_logs.update({
@@ -164,35 +131,20 @@ async function finishInstruction() {
 
 //  move to next one by ordering number or finishBrewing
 function moveToNextInstruction() {
-  // get current instruction
-  const currentInstruction = getCurrentInstruction();
+  loadedRecipe.Instructions.shift();
 
-  // we find next instruction
-  const newInstruction = loadedRecipe.Instructions.filter(
-    (instr) => instr.ordering === currentInstruction.ordering + 1
-  )?.[0];
-
-  if (newInstruction) {
-    state.instruction.currentInstructionId = newInstruction.id;
+  if (loadedRecipe.Instructions.length === 0) {
+    finishBrewing();
   } else {
-    // if next instruction wasn't found
-    state.brewStatus = 'FINISHED';
-    state.instruction = {
-      currentInstructionId: 0,
-      status: 'WAITING',
-    };
+    startInstruction();
   }
 }
 
 export const startBrewing = (id: number) => {
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
-  state.instruction = {
-    currentInstructionId: loadedRecipe?.Instructions[0].id,
-    status: 'IN_PROGRESS',
-  };
   statusLoggerInterval = setInterval(statusLogger, 1000);
-  startInstruction(getCurrentInstruction());
+  startInstruction();
 };
 
 export const abortBrewing = () => {
@@ -210,7 +162,11 @@ export const resumeBrewing = () => {
   statusLoggerInterval = setInterval(statusLogger, 1000);
 };
 
-export const finishBrewing = () => {
-  // TODO
+function finishBrewing() {
+  state.brewStatus = 'FINISHED';
+  state.instruction = {
+    currentInstructionId: -1,
+    status: 'WAITING',
+  };
   clearInterval(statusLoggerInterval);
-};
+}

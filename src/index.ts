@@ -1,7 +1,6 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
-import { clients } from './modules';
 
 import { updateStatus } from './brewing';
 
@@ -74,6 +73,8 @@ const wss = new WebSocketServer({ port: WS_PORT }, () => {
   console.log('WS Server is running on PORT:', WS_PORT);
 });
 
+const clients: WSClient[] = [];
+
 wss.on('connection', (ws: WSClient) => {
   const wsClient = ws;
   console.log('Client connected');
@@ -81,7 +82,7 @@ wss.on('connection', (ws: WSClient) => {
 
   wsClient.on('message', (message) => {
     const data: ReceivedModuleData = JSON.parse(message.toString());
-    wsClient.name = data.moduleId;
+    wsClient.moduleID = data.moduleId;
     console.log('Sprava prijata cez websocket!');
     console.log(data);
 
@@ -97,13 +98,25 @@ wss.on('connection', (ws: WSClient) => {
   });
 });
 
+export const sendInstruction = (moduleId: number, data: string) => {
+  const wsClient = clients.find((client) => client.moduleID === moduleId);
+  if (wsClient) {
+    wsClient.send(data);
+  } else {
+    console.log('Error, module not connected');
+    // TODO error handle
+  }
+};
+
 // keepalive for WS clients
 setInterval(() => {
   clients.forEach((client) => {
     const wsClient = client;
 
     if (!wsClient.isAlive) {
-      console.log(`Client "${wsClient.name}" not alive, closing websocket!`);
+      console.log(
+        `Client "${wsClient.moduleID}" not alive, closing websocket!`
+      );
 
       wsClient.terminate();
       const index = clients.indexOf(wsClient);
