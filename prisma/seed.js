@@ -46,12 +46,12 @@ async function main() {
           {
             name: 'Motor 1',
             code_name: 'MOTOR_1',
-            module: 2,
+            module: 1,
           },
           {
             name: 'Motor 2',
             code_name: 'MOTOR_2',
-            module: 2,
+            module: 1,
           },
         ],
       },
@@ -71,7 +71,7 @@ async function main() {
           {
             name: 'Pump 1',
             code_name: 'PUMP_1',
-            module: 3,
+            module: 1,
           },
         ],
       },
@@ -91,22 +91,22 @@ async function main() {
           {
             name: 'Fermentables',
             code_name: 'FERMENTABLE',
-            module: 4,
+            module: 1,
           },
           {
             name: 'Yeast',
             code_name: 'YEAST',
-            module: 4,
+            module: 1,
           },
           {
             name: 'Hops',
             code_name: 'HOPS',
-            module: 4,
+            module: 1,
           },
           {
             name: 'Other',
             code_name: 'OTHER',
-            module: 4,
+            module: 1,
           },
         ],
       },

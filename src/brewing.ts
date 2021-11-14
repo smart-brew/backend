@@ -87,6 +87,11 @@ export const getState = () => {
 };
 
 async function startInstruction() {
+  state.instruction = {
+    currentInstructionId: loadedRecipe.Instructions[0].id,
+    status: 'IN_PROGRESS',
+  };
+
   const currentInstructionLog = await db.instruction_logs.create({
     data: {
       Instructions: { connect: { id: state.instruction.currentInstructionId } },
@@ -95,11 +100,6 @@ async function startInstruction() {
     select: { id: true },
   });
   currentInstructionLogId = currentInstructionLog.id;
-
-  state.instruction = {
-    currentInstructionId: loadedRecipe.Instructions[0].id,
-    status: 'IN_PROGRESS',
-  };
 
   executeInstruction();
 }
