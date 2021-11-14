@@ -2,7 +2,6 @@
 import { sendInstruction } from './index';
 import db from './prismaClient';
 
-import { Instruction } from './types/Instruction';
 import {
   categoryKeys,
   DataCategory,
@@ -12,9 +11,9 @@ import {
 import { Recipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
 
-let loadedRecipe: Recipe;
+let loadedRecipe: Recipe | null = null;
 let brewId: number;
-let instructionLogId: number;
+let currentInstructionLogId: number;
 
 const state: SystemData = {
   data: {
@@ -43,11 +42,22 @@ const statusLogger = async () => {
 };
 
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
+  // update instruction status
+  if (
+    loadedRecipe?.Instructions[0]?.Function_templates?.category === category &&
+    loadedRecipe?.Instructions[0]?.Function_options?.code_name ===
+      newData.DEVICE
+  ) {
+    state.instruction.status = newData.STATE;
+  }
+
+  // update data status
   const currentCategoryState: DataCategory[] = state.data[category];
 
   for (let i = 0; i < currentCategoryState.length; i += 1) {
     if (currentCategoryState[i].DEVICE === newData.DEVICE) {
       currentCategoryState[i] = newData;
+
       return;
     }
   }
@@ -65,7 +75,6 @@ export const updateStatus = (newData: ReceivedModuleData) => {
       updateData(category, newDataPoint);
     });
   });
-  handleInstructionResponse(newData);
 };
 
 export const setRecipe = (recipe: Recipe) => {
@@ -78,14 +87,14 @@ export const getState = () => {
 };
 
 async function startInstruction() {
-  const result = await db.instruction_logs.create({
+  const currentInstructionLog = await db.instruction_logs.create({
     data: {
       Instructions: { connect: { id: state.instruction.currentInstructionId } },
       Brewings: { connect: { id: brewId } },
     },
     select: { id: true },
   });
-  instructionLogId = result.id;
+  currentInstructionLogId = currentInstructionLog.id;
 
   state.instruction = {
     currentInstructionId: loadedRecipe.Instructions[0].id,
@@ -108,29 +117,30 @@ function executeInstruction() {
   sendInstruction(moduleID, data);
 }
 
-function handleInstructionResponse(response: ReceivedModuleData) {
-  state.instruction.status = response.status;
+export function updateInstructions() {
   if (state.instruction.status === 'ERROR') {
     state.brewStatus = 'ERROR';
     // TODO Error handle
+  } else if (state.instruction.status === 'DONE') {
+    moveToNextInstruction();
   }
-  finishInstruction();
 }
 
-async function finishInstruction() {
+async function updateInstructionLog() {
   await db.instruction_logs.update({
     where: {
-      id: instructionLogId,
+      id: currentInstructionLogId,
     },
     data: {
       finished: true,
     },
   });
-  moveToNextInstruction();
 }
 
 //  move to next one by ordering number or finishBrewing
 function moveToNextInstruction() {
+  updateInstructionLog();
+
   loadedRecipe.Instructions.shift();
 
   if (loadedRecipe.Instructions.length === 0) {

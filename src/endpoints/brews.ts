@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { StartBrewBody } from '../types/Endpoints';
 import db from '../prismaClient';
 import { startBrewing, getState } from '../brewing';
 
@@ -9,10 +10,10 @@ export const brewStatus = (req: Request, res: Response) => {
 
 export const startNewBrewing = async (req: Request, res: Response) => {
   console.log(req.body);
-  const { recipeID } = req.body;
+  const { recipeId }: StartBrewBody = req.body;
   const result = await db.brewings.create({
     data: {
-      Recipes: { connect: { id: recipeID } },
+      Recipes: { connect: { id: recipeId } },
     },
     select: { id: true },
   });

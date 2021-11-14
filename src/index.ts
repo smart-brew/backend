@@ -2,7 +2,7 @@ import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
 
-import { updateStatus } from './brewing';
+import { updateInstructions, updateStatus } from './brewing';
 
 import {
   createRecipe,
@@ -54,7 +54,7 @@ server.get('/api/brew', getAllBrews);
 
 server.get('/api/data', brewStatus);
 
-server.put('/api/brew/:recipeId/start', startNewBrewing);
+server.put('/api/brew/0/start', startNewBrewing);
 
 server.post('/api/brew/:brewId/abort', abortBrew);
 server.post('/api/brew/:brewId/pause', pauseBrew);
@@ -82,12 +82,13 @@ wss.on('connection', (ws: WSClient) => {
 
   wsClient.on('message', (message) => {
     const data: ReceivedModuleData = JSON.parse(message.toString());
-    wsClient.moduleID = data.moduleId;
+    wsClient.moduleId = data.moduleId;
     console.log('Sprava prijata cez websocket!');
-    console.log(data);
+    // console.log(data);
 
     // update current system data, with the new data
     updateStatus(data);
+    updateInstructions();
   });
 
   wsClient.send('WS has succesfully connected to server');
@@ -99,7 +100,7 @@ wss.on('connection', (ws: WSClient) => {
 });
 
 export const sendInstruction = (moduleId: number, data: string) => {
-  const wsClient = clients.find((client) => client.moduleID === moduleId);
+  const wsClient = clients.find((client) => client.moduleId === moduleId);
   if (wsClient) {
     wsClient.send(data);
   } else {
@@ -115,7 +116,7 @@ setInterval(() => {
 
     if (!wsClient.isAlive) {
       console.log(
-        `Client "${wsClient.moduleID}" not alive, closing websocket!`
+        `Client "${wsClient.moduleId}" not alive, closing websocket!`
       );
 
       wsClient.terminate();
