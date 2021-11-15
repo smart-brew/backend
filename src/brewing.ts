@@ -6,7 +6,10 @@ import {
   categoryKeys,
   DataCategory,
   ModuleData,
+  Motor,
   ReceivedModuleData,
+  Temperature,
+  Unloader,
 } from './types/ModuleData';
 import { Recipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
@@ -23,7 +26,8 @@ const state: SystemData = {
     PUMP: [],
   },
   instruction: {
-    currentInstructionId: 0,
+    currentInstruction: 0,
+    currentValue: 0,
     status: 'WAITING',
   },
   brewStatus: 'IDLE',
@@ -49,6 +53,12 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
       newData.DEVICE
   ) {
     state.instruction.status = newData.STATE;
+
+    if (category === 'MOTOR')
+      state.instruction.currentValue = (newData as Motor).RPM;
+    else if (category === 'TEMPERATURE')
+      state.instruction.currentValue = (newData as Temperature).TEMP;
+    else state.instruction.currentValue = 0;
   }
 
   // update data status
@@ -87,14 +97,13 @@ export const getState = () => {
 };
 
 async function startInstruction() {
-  state.instruction = {
-    currentInstructionId: loadedRecipe.Instructions[0].id,
-    status: 'IN_PROGRESS',
-  };
+  state.instruction.currentInstruction = loadedRecipe.Instructions[0].id;
+  state.instruction.status = 'IN_PROGRESS';
+  state.instruction.currentValue = 0;
 
   const currentInstructionLog = await db.instruction_logs.create({
     data: {
-      Instructions: { connect: { id: state.instruction.currentInstructionId } },
+      Instructions: { connect: { id: state.instruction.currentInstruction } },
       Brewings: { connect: { id: brewId } },
     },
     select: { id: true },
@@ -175,7 +184,8 @@ export const resumeBrewing = () => {
 function finishBrewing() {
   state.brewStatus = 'FINISHED';
   state.instruction = {
-    currentInstructionId: -1,
+    currentInstruction: -1,
+    currentValue: 0,
     status: 'WAITING',
   };
   clearInterval(statusLoggerInterval);

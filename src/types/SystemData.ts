@@ -9,7 +9,8 @@ export type BrewingStatus =
   | 'FINISHED';
 
 export interface InstructionStatus {
-  currentInstructionId: number;
+  currentInstruction: number;
+  currentValue: number;
   status: Status;
 }
 
