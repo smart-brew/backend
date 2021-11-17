@@ -1,8 +1,11 @@
-// import supertest from 'supertest';
-// import app from '../src/index';
+import request from 'supertest';
+import { server } from '../src/index';
+// import { brewStatus } from '../src/endpoints/brews';
 
-describe('Sample Test', () => {
-  it('should test that true === true', () => {
-    expect(true).toBe(true);
+describe('Get data devices info data ', () => {
+  test('send get request', async () => {
+    const response = await request(server).get('/api/data').send();
+
+    expect(response.statusCode).toBe(200);
   });
 });
