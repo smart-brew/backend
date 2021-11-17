@@ -30,7 +30,7 @@ import { WSClient } from './types/WebSocket';
 const PORT = 8000;
 const WS_PORT = 8001;
 
-const server = express();
+export const server = express();
 
 // fix cors
 server.use(cors());
