@@ -4,5 +4,6 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn
 COPY ./ ./
+RUN yarn prisma generate
 RUN yarn build
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh" ]

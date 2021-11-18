@@ -11,10 +11,10 @@ import {
   Temperature,
   Unloader,
 } from './types/ModuleData';
-import { Recipe } from './types/Recipe';
+import { LoadedRecipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
 
-let loadedRecipe: Recipe | null = null;
+let loadedRecipe: LoadedRecipe | null = null;
 let brewId: number;
 let currentInstructionLogId: number;
 
@@ -36,7 +36,7 @@ const state: SystemData = {
 let statusLoggerInterval: NodeJS.Timeout;
 
 const statusLogger = async () => {
-  await db.status_logs.create({
+  await db.statusLogs.create({
     data: {
       status: state.brewStatus,
       params: JSON.stringify(state.data),
@@ -48,9 +48,8 @@ const statusLogger = async () => {
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   // update instruction status
   if (
-    loadedRecipe?.Instructions[0]?.Function_templates?.category === category &&
-    loadedRecipe?.Instructions[0]?.Function_options?.code_name ===
-      newData.DEVICE
+    loadedRecipe?.Instructions[0]?.FunctionTemplates?.category === category &&
+    loadedRecipe?.Instructions[0]?.FunctionOptions?.code_name === newData.DEVICE
   ) {
     state.instruction.status = newData.STATE;
 
@@ -87,7 +86,7 @@ export const updateStatus = (newData: ReceivedModuleData) => {
   });
 };
 
-export const setRecipe = (recipe: Recipe) => {
+export const setRecipe = (recipe: LoadedRecipe) => {
   loadedRecipe = recipe;
   console.log(loadedRecipe);
 };
@@ -101,7 +100,7 @@ async function startInstruction() {
   state.instruction.status = 'IN_PROGRESS';
   state.instruction.currentValue = 0;
 
-  const currentInstructionLog = await db.instruction_logs.create({
+  const currentInstructionLog = await db.instructionLogs.create({
     data: {
       Instructions: { connect: { id: state.instruction.currentInstruction } },
       Brewings: { connect: { id: brewId } },
@@ -115,12 +114,12 @@ async function startInstruction() {
 // sends instruction to module via websocket
 function executeInstruction() {
   const currInst = loadedRecipe.Instructions[0];
-  const moduleID = currInst.Function_options.module;
+  const moduleID = currInst.FunctionOptions.module;
   const data = JSON.stringify({
-    moduleId: currInst.Function_options.module,
-    DEVICE: currInst.Function_options.code_name,
-    CATEGORY: currInst.Function_templates.category,
-    INSTRUCTION: currInst.Function_templates.code_name,
+    moduleId: currInst.FunctionOptions.module,
+    DEVICE: currInst.FunctionOptions.code_name,
+    CATEGORY: currInst.FunctionTemplates.category,
+    INSTRUCTION: currInst.FunctionTemplates.code_name,
     PARAMS: Object.values(currInst.param)[0], // TODO - Peto - Toto nejako lepsie vymysliet - ziskat z toho template ze presne ako sa to vola ten param
   });
   sendInstruction(moduleID, data);
@@ -136,7 +135,7 @@ export function updateInstructions() {
 }
 
 async function updateInstructionLog() {
-  await db.instruction_logs.update({
+  await db.instructionLogs.update({
     where: {
       id: currentInstructionLogId,
     },

@@ -4,9 +4,9 @@ import db from '../prismaClient';
 const getAllFunctions = async (req: Request, res: Response) => {
   console.log(req.body);
   res.json(
-    await db.function_templates.findMany({
+    await db.functionTemplates.findMany({
       include: {
-        Function_options: true,
+        FunctionOptions: true,
       },
     })
   );

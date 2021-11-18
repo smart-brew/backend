@@ -1,15 +1,5 @@
 /* eslint-disable camelcase */
-import { Instructions, Recipes } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { loadRecipe } from '../endpoints/recipes';
 
-export type Recipe = Recipes & {
-  Instructions: (Instructions & {
-    Function_options: {
-      code_name: string;
-      module: number;
-    };
-    Function_templates: {
-      code_name: string;
-      category: string;
-    };
-  })[];
-};
+export type LoadedRecipe = Prisma.PromiseReturnType<typeof loadRecipe>;

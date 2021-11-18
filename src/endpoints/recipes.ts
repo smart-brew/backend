@@ -17,6 +17,9 @@ export const getRecipe = async (req: Request, res: Response) => {
       include: {
         Ingredients: true,
         Instructions: {
+          orderBy: {
+            ordering: 'asc',
+          },
           include: {
             Blocks: {
               select: {
@@ -42,13 +45,13 @@ export const loadRecipe = async (req: Request, res: Response) => {
           ordering: 'asc',
         },
         include: {
-          Function_templates: {
+          FunctionTemplates: {
             select: {
               code_name: true,
               category: true,
             },
           },
-          Function_options: {
+          FunctionOptions: {
             select: {
               code_name: true,
               module: true,
@@ -61,6 +64,7 @@ export const loadRecipe = async (req: Request, res: Response) => {
 
   setRecipe(recipe);
   res.json(recipe);
+  return recipe;
 };
 
 export const createRecipe = async (req: Request, res: Response) => {
@@ -78,12 +82,12 @@ export const createRecipe = async (req: Request, res: Response) => {
       },
     };
 
-    elem.Function_templates = { connect: { id: elem.function_template_id } };
+    elem.FunctionTemplates = { connect: { id: elem.function_template_id } };
     delete elem.function_template_id;
     delete elem.Block;
 
     if (elem.function_option_id) {
-      elem.Function_options = { connect: { id: elem.function_option_id } };
+      elem.FunctionOptions = { connect: { id: elem.function_option_id } };
       delete elem.function_option_id;
     }
     return elem;

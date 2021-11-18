@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const db = new PrismaClient();
 
 async function main() {
-  await db.function_templates.upsert({
+  await db.functionTemplates.upsert({
     where: { code_name: 'SET_TEMPERATURE' },
     update: {},
     create: {
@@ -14,7 +14,7 @@ async function main() {
       units: '°C',
       input_type: 'float',
       description: 'Sets temerature for selected chamber',
-      Function_options: {
+      FunctionOptions: {
         create: [
           {
             name: 'Chamber 1',
@@ -31,7 +31,7 @@ async function main() {
     },
   });
 
-  await db.function_templates.upsert({
+  await db.functionTemplates.upsert({
     where: { code_name: 'SET_MOTOR_SPEED' },
     update: {},
     create: {
@@ -41,7 +41,7 @@ async function main() {
       units: 'RMP',
       input_type: 'float',
       description: 'Sets rpms for selected motor',
-      Function_options: {
+      FunctionOptions: {
         create: [
           {
             name: 'Motor 1',
@@ -58,7 +58,7 @@ async function main() {
     },
   });
 
-  await db.function_templates.upsert({
+  await db.functionTemplates.upsert({
     where: { code_name: 'TRANSFER_LIQUIDS' },
     update: {},
     create: {
@@ -66,7 +66,7 @@ async function main() {
       name: 'Transfer liquids',
       category: 'PUMP',
       description: 'Transfers liquids from first chamber to second',
-      Function_options: {
+      FunctionOptions: {
         create: [
           {
             name: 'Pump 1',
@@ -78,7 +78,7 @@ async function main() {
     },
   });
 
-  await db.function_templates.upsert({
+  await db.functionTemplates.upsert({
     where: { code_name: 'UNLOAD' },
     update: {},
     create: {
@@ -86,7 +86,7 @@ async function main() {
       name: 'Unload',
       category: 'UNLOADER',
       description: 'Unloads selected ingredient into chamber',
-      Function_options: {
+      FunctionOptions: {
         create: [
           {
             name: 'Fermentables',
@@ -113,7 +113,7 @@ async function main() {
     },
   });
 
-  await db.function_templates.upsert({
+  await db.functionTemplates.upsert({
     where: { code_name: 'WAIT' },
     update: {},
     create: {
@@ -126,7 +126,7 @@ async function main() {
     },
   });
 
-  await db.function_templates.upsert({
+  await db.functionTemplates.upsert({
     where: { code_name: 'MANUAL' },
     update: {},
     create: {
@@ -178,12 +178,12 @@ async function main() {
           {
             ordering: 1,
             param: { rpms: '100' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'SET_MOTOR_SPEED',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'MOTOR_1',
               },
@@ -202,7 +202,7 @@ async function main() {
           {
             ordering: 2,
             param: { duration: '5' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'WAIT',
               },
@@ -221,12 +221,12 @@ async function main() {
           {
             ordering: 3,
             param: { temp: '60' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'SET_TEMPERATURE',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'TEMP_1',
               },
@@ -244,12 +244,12 @@ async function main() {
           },
           {
             ordering: 4,
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'UNLOAD',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'FERMENTABLE',
               },
@@ -312,12 +312,12 @@ async function main() {
           {
             ordering: 1,
             param: { temp: '100' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'SET_TEMPERATURE',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'TEMP_1',
               },
@@ -336,7 +336,7 @@ async function main() {
           {
             ordering: 2,
             param: { duration: '20' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'WAIT',
               },
@@ -355,7 +355,7 @@ async function main() {
           {
             ordering: 3,
             param: { text: 'Do something' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'MANUAL',
               },
@@ -373,12 +373,12 @@ async function main() {
           },
           {
             ordering: 4,
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'UNLOAD',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'HOPS',
               },
@@ -396,12 +396,12 @@ async function main() {
           },
           {
             ordering: 5,
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'TRANSFER_LIQUIDS',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'PUMP_1',
               },
@@ -420,12 +420,12 @@ async function main() {
           {
             ordering: 6,
             param: { rpm: '200' },
-            Function_templates: {
+            FunctionTemplates: {
               connect: {
                 code_name: 'SET_MOTOR_SPEED',
               },
             },
-            Function_options: {
+            FunctionOptions: {
               connect: {
                 code_name: 'MOTOR_2',
               },
