@@ -1,5 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'supertest';
-import { server } from '../src/index';
+import { server } from '../index';
 // import { brewStatus } from '../src/endpoints/brews';
 
 describe('Get data devices info data ', () => {

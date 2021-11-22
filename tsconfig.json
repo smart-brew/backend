@@ -10,5 +10,5 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["src/**/*", "tests/index.test.ts"]
+  "include": ["src/**/*"]
 }
