@@ -14,7 +14,7 @@
     "prepare": "husky install",
     "start": "node .",
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -23,6 +23,7 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.9",
     "@types/supertest": "^2.0.11",
     "@types/ws": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^5.3.0",

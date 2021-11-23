@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { sendInstruction } from './index';
+import { sendInstruction } from '.';
 import db from './prismaClient';
 
 import {

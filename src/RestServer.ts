@@ -1,13 +1,5 @@
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
-
-import {
-  createRecipe,
-  getAllRecipes,
-  getRecipe,
-  loadRecipe,
-} from './endpoints/recipes';
-
 import getAllFunctions from './endpoints/functions';
 
 import {
@@ -21,7 +13,14 @@ import {
   startNewBrewing,
 } from './endpoints/brews';
 
-export const server = express();
+import {
+  createRecipe,
+  getAllRecipes,
+  getRecipe,
+  loadRecipe,
+} from './endpoints/recipes';
+
+const server: Application = express();
 
 // fix cors
 server.use(cors());
@@ -53,3 +52,5 @@ server.post('/api/brew/:brewId/resume', resumeBrew);
 
 server.post('/api/brew/:brewId/step/:stepId', editBrewStep);
 server.post('/api/brew/:brewId/step/:stepId/confirm', confirmStep);
+
+export default server;
