@@ -1,8 +1,9 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
 import cors from 'cors';
+import db from './prismaClient';
 
-import { updateInstructions, updateStatus } from './brewing';
+import { brewError, updateInstructions, updateStatus } from './brewing';
 
 import {
   createRecipe,
@@ -26,6 +27,8 @@ import {
 
 import { ReceivedModuleData } from './types/ModuleData';
 import { WSClient } from './types/WebSocket';
+import queryErrorHanlder from './queryErrorHandler';
+import logger from './logger';
 
 const PORT = 8000;
 const WS_PORT = 8001;
@@ -65,27 +68,35 @@ server.post('/api/brew/:brewId/step/:stepId/confirm', confirmStep);
 
 // backend server start
 server.listen(PORT, () => {
-  console.log('HTTP Server is running on PORT:', PORT);
+  logger.info(`HTTP Server is running on PORT: ${PORT}`);
 });
+
+// DB connection test
+(async () => {
+  try {
+    await db.$connect();
+    logger.info('Connected to database successfully');
+  } catch (e) {
+    queryErrorHanlder(e, 'Connection test');
+  }
+})();
 
 // --------- WEBSOCKET SERVER ----------
 const wss = new WebSocketServer({ port: WS_PORT }, () => {
-  console.log('WS Server is running on PORT:', WS_PORT);
+  logger.info(`WS Server is running on PORT: ${WS_PORT}`);
 });
 
 const clients: WSClient[] = [];
 
 wss.on('connection', (ws: WSClient) => {
   const wsClient = ws;
-  console.log('Client connected');
+  logger.info('WS client connected');
   clients.push(wsClient);
 
   wsClient.on('message', (message) => {
     const data: ReceivedModuleData = JSON.parse(message.toString());
     wsClient.moduleId = data.moduleId;
-    console.log('Sprava prijata cez websocket!');
-    // console.log(data);
-
+    logger.child({ data }).debug('Message recieved on WS');
     // update current system data, with the new data
     updateStatus(data);
     updateInstructions();
@@ -100,12 +111,15 @@ wss.on('connection', (ws: WSClient) => {
 });
 
 export const sendInstruction = (moduleId: number, data: string) => {
+  logger
+    .child({ data })
+    .debug(`Sending message to WS with moduleId ${moduleId}`);
   const wsClient = clients.find((client) => client.moduleId === moduleId);
   if (wsClient) {
     wsClient.send(data);
   } else {
-    console.log('Error, module not connected');
-    // TODO error handle
+    logger.error('WS module missing');
+    brewError();
   }
 };
 
@@ -115,7 +129,7 @@ setInterval(() => {
     const wsClient = client;
 
     if (!wsClient.isAlive) {
-      console.log(
+      logger.info(
         `Client "${wsClient.moduleId}" not alive, closing websocket!`
       );
 

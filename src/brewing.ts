@@ -1,6 +1,8 @@
 /* eslint-disable no-use-before-define */
 import { sendInstruction } from './index';
+import logger from './logger';
 import db from './prismaClient';
+import queryErrorHanlder from './queryErrorHandler';
 
 import {
   categoryKeys,
@@ -9,7 +11,6 @@ import {
   Motor,
   ReceivedModuleData,
   Temperature,
-  Unloader,
 } from './types/ModuleData';
 import { LoadedRecipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
@@ -36,13 +37,17 @@ const state: SystemData = {
 let statusLoggerInterval: NodeJS.Timeout;
 
 const statusLogger = async () => {
-  await db.statusLogs.create({
-    data: {
-      status: state.brewStatus,
-      params: JSON.stringify(state.data),
-      Brewings: { connect: { id: brewId } },
-    },
-  });
+  try {
+    await db.statusLogs.create({
+      data: {
+        status: state.brewStatus,
+        params: JSON.stringify(state.data),
+        Brewings: { connect: { id: brewId } },
+      },
+    });
+  } catch (e) {
+    queryErrorHanlder(e, 'Brewery status logging query');
+  }
 };
 
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
@@ -84,11 +89,12 @@ export const updateStatus = (newData: ReceivedModuleData) => {
       updateData(category, newDataPoint);
     });
   });
+  logger.child({ state }).debug('Brewery status');
 };
 
 export const setRecipe = (recipe: LoadedRecipe) => {
   loadedRecipe = recipe;
-  console.log(loadedRecipe);
+  logger.child({ loadedRecipe }).debug('Loaded recipe');
 };
 
 export const getState = () => {
@@ -100,16 +106,22 @@ async function startInstruction() {
   state.instruction.status = 'IN_PROGRESS';
   state.instruction.currentValue = 0;
 
-  const currentInstructionLog = await db.instructionLogs.create({
-    data: {
-      Instructions: { connect: { id: state.instruction.currentInstruction } },
-      Brewings: { connect: { id: brewId } },
-    },
-    select: { id: true },
-  });
-  currentInstructionLogId = currentInstructionLog.id;
-
-  executeInstruction();
+  try {
+    const currentInstructionLog = await db.instructionLogs.create({
+      data: {
+        Instructions: { connect: { id: state.instruction.currentInstruction } },
+        Brewings: { connect: { id: brewId } },
+      },
+      select: { id: true },
+    });
+    currentInstructionLogId = currentInstructionLog.id;
+    logger.info(
+      `Starting new instruction with id ${state.instruction.currentInstruction}`
+    );
+    executeInstruction();
+  } catch (e) {
+    queryErrorHanlder(e, 'Instruction start logging query');
+  }
 }
 // sends instruction to module via websocket
 function executeInstruction() {
@@ -135,14 +147,21 @@ export function updateInstructions() {
 }
 
 async function updateInstructionLog() {
-  await db.instructionLogs.update({
-    where: {
-      id: currentInstructionLogId,
-    },
-    data: {
-      finished: true,
-    },
-  });
+  logger.info(
+    `Finishing instruction with id ${state.instruction.currentInstruction}`
+  );
+  try {
+    await db.instructionLogs.update({
+      where: {
+        id: currentInstructionLogId,
+      },
+      data: {
+        finished: true,
+      },
+    });
+  } catch (e) {
+    queryErrorHanlder(e, 'Instruction finish logging query');
+  }
 }
 
 //  move to next one by ordering number or finishBrewing
@@ -159,6 +178,7 @@ function moveToNextInstruction() {
 }
 
 export const startBrewing = (id: number) => {
+  logger.info(`Starting new brewing with id ${id}`);
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
   statusLoggerInterval = setInterval(statusLogger, 1000);
@@ -189,3 +209,7 @@ function finishBrewing() {
   };
   clearInterval(statusLoggerInterval);
 }
+
+export const brewError = () => {
+  // TODO abort brewing from BE
+};
