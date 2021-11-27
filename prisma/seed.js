@@ -156,7 +156,7 @@ async function main() {
     create: {
       name: 'TEST_RECIPE_1',
       description: 'Seed recipe 1',
-      locked: false,
+      locked: true,
       Ingredients: {
         create: [
           {
