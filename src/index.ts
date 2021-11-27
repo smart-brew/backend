@@ -23,6 +23,7 @@ import {
   pauseBrew,
   resumeBrew,
   startNewBrewing,
+  shutdown,
 } from './endpoints/brews';
 
 import { ReceivedModuleData } from './types/ModuleData';
@@ -56,6 +57,8 @@ server.get('/api/function', getAllFunctions);
 server.get('/api/brew', getAllBrews);
 
 server.get('/api/data', brewStatus);
+
+server.post('/api/shutdown', shutdown);
 
 server.put('/api/brew/0/start', startNewBrewing);
 

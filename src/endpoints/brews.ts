@@ -4,6 +4,7 @@ import logger from '../logger';
 import { StartBrewBody } from '../types/Endpoints';
 import db from '../prismaClient';
 import { startBrewing, getState } from '../brewing';
+import { exec } from 'child_process';
 
 export const brewStatus = (req: Request, res: Response) => {
   logger.debug(`GET /api/data`);
@@ -55,4 +56,12 @@ export const editBrewStep = (req: Request, res: Response) => {
 
 export const confirmStep = (req: Request, res: Response) => {
   res.status(200).send('TODO: confirmStep');
+};
+
+export const shutdown = (req: Request, res: Response) => {
+  logger.debug(`POST /api/shutdown`);
+  exec('sudo shutdown -h now', (error, stdout, stderr) => {
+    res.status(200).send('Shutting down.');
+    logger.info('Shutting down.');
+  });
 };
