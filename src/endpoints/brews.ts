@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
+import { exec } from 'child_process';
+
 import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
 import { StartBrewBody } from '../types/Endpoints';
 import db from '../prismaClient';
 import { startBrewing, getState } from '../brewing';
-import { exec } from 'child_process';
 
 export const brewStatus = (req: Request, res: Response) => {
   logger.debug(`GET /api/data`);
