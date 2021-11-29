@@ -1,5 +1,8 @@
 import apiServer from './RestServer';
 import startNewWss from './wsServer';
+import db from './prismaClient';
+import queryErrorHanlder from './queryErrorHandler';
+import logger from './logger';
 
 const API_PORT = 8000;
 const WS_PORT = 8001;
