@@ -4,7 +4,7 @@ import db from '../prismaClient';
 import { startBrewing, getState } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
-  console.log('brew status');
+  // console.log('brew status');
   res.json(getState());
 };
 

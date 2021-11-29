@@ -33,6 +33,28 @@ const startNewWss = (WS_PORT: number) => {
       wsClient.isAlive = true;
     });
   });
+
+  // keepalive for WS clients
+  setInterval(() => {
+    clients.forEach((client) => {
+      const wsClient = client;
+
+      if (!wsClient.isAlive) {
+        console.log(
+          `Client "${wsClient.moduleId}" not alive, closing websocket!`
+        );
+
+        wsClient.terminate();
+        const index = clients.indexOf(wsClient);
+        if (index > -1) {
+          clients.splice(index, 1);
+        }
+        return;
+      }
+      wsClient.isAlive = false;
+      wsClient.ping();
+    });
+  }, 10000);
 };
 
 export const sendInstruction = (moduleId: number, data: string) => {
@@ -44,26 +66,4 @@ export const sendInstruction = (moduleId: number, data: string) => {
     // TODO error handle
   }
 };
-
-// keepalive for WS clients
-setInterval(() => {
-  clients.forEach((client) => {
-    const wsClient = client;
-
-    if (!wsClient.isAlive) {
-      console.log(
-        `Client "${wsClient.moduleId}" not alive, closing websocket!`
-      );
-
-      wsClient.terminate();
-      const index = clients.indexOf(wsClient);
-      if (index > -1) {
-        clients.splice(index, 1);
-      }
-      return;
-    }
-    wsClient.isAlive = false;
-    wsClient.ping();
-  });
-}, 10000);
 export default startNewWss;
