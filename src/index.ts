@@ -11,3 +11,13 @@ apiServer?.listen(API_PORT, (): void => {
 
 // --------- WEBSOCKET SERVER ----------
 startNewWss(WS_PORT);
+
+// DB connection test
+(async () => {
+  try {
+    await db.$connect();
+    logger.info('Connected to database successfully');
+  } catch (e) {
+    queryErrorHanlder(e, 'Connection test');
+  }
+})();

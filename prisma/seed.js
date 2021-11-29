@@ -151,25 +151,38 @@ async function main() {
   });
 
   const recept1 = await db.recipes.upsert({
-    where: { name: 'TEST_RECIPE_1' },
+    where: { name: 'Smoky Grove Lichtenhainer' },
     update: {},
     create: {
-      name: 'TEST_RECIPE_1',
-      description: 'Seed recipe 1',
-      locked: false,
+      name: 'Smoky Grove Lichtenhainer',
+      description:
+        'Light, gently tart, and smoked—lichtenhainer is an unusual beer, yet surprisingly good for all seasons and one you’ll want to brew and enjoy often.',
+      locked: true,
       Ingredients: {
         create: [
           {
-            name: 'Some ingredient',
+            name: 'American - Pale 2-Row',
             amount: 5.6,
-            type: 'Hops',
+            type: 'Fermentable',
             units: 'Kg',
           },
           {
-            name: 'Some different ingredient',
+            name: 'Fermentis - Safale - American Ale Yeast US-05',
             amount: 1,
             type: 'Yeast',
-            units: 'Pcs',
+            units: '',
+          },
+          {
+            name: 'Magnum (Pellet)',
+            amount: 1,
+            type: 'Hops',
+            units: 'oz',
+          },
+          {
+            name: 'Crush whilrfoc Tablet',
+            amount: 1,
+            type: 'Other',
+            units: '',
           },
         ],
       },
@@ -285,25 +298,50 @@ async function main() {
   console.log(JSON.stringify(recept1, null, 2));
 
   const recept2 = await db.recipes.upsert({
-    where: { name: 'TEST_RECIPE_2' },
+    where: { name: 'Vanilla Cream Ale' },
     update: {},
     create: {
-      name: 'TEST_RECIPE_2',
-      description: 'Seed recipe 2',
+      name: 'Vanilla Cream Ale',
+      description:
+        'Courtesy of the brewing team at Burke-Gilman in Seattle, here is a homebrew-scale recipe for the double hazy IPA that won GABF gold in 2020.',
       locked: false,
       Ingredients: {
         create: [
           {
-            name: 'Nice ingredient',
-            amount: 80,
-            type: 'Fermentables',
-            units: 'g',
+            name: 'American - Pale 2-Row',
+            amount: 3.5,
+            type: 'Fermentable',
+            units: 'Kg',
           },
           {
-            name: 'Nicer ingredient',
-            amount: 4,
+            name: 'American - White Wheat',
+            amount: 1,
+            type: 'Fermentable',
+            units: 'Kg',
+          },
+          {
+            name: 'Wyeast - Kölsch 2565',
+            amount: 1,
+            type: 'Yeast',
+            units: '',
+          },
+          {
+            name: 'Cascade',
+            amount: 1,
+            type: 'Hops',
+            units: 'oz',
+          },
+          {
+            name: 'Crush whilrfoc Tablet',
+            amount: 1,
             type: 'Other',
-            units: 'packs',
+            units: '',
+          },
+          {
+            name: 'Pure vanilla extract',
+            amount: 1,
+            type: 'Other',
+            units: 'oz',
           },
         ],
       },
