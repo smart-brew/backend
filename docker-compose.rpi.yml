@@ -1,0 +1,29 @@
+version: '2.1'
+services:
+  postgres:
+    container_name: database
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: smartbrew_user
+      POSTGRES_PASSWORD: smartbrew
+      POSTGRES_DB: smartbrew_database
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+
+  server:
+    build: 
+      context: .
+      dockerfile: Dockerfile.rpi
+    ports:
+      - 8000:8000
+      - 8001:8001
+    container_name: server
+    restart: always
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:

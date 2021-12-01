@@ -31,7 +31,6 @@ jobs:
               cd /home/pi/backend
               git pull
               ls -la
-              docker-compose build
-              docker-compose up --detach
+              docker-compose -f docker-compose.rpi.yml up --build --detach
           SSH_RPI
           SSH_VM
