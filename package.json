@@ -14,7 +14,9 @@
     "prepare": "husky install",
     "start": "node .",
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
-    "test": "jest"
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "test": "yarn dotenv -e .dev.env  jest -i"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -37,6 +39,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.2",
     "jest": "^27.3.1",
+    "jest-mock-extended": "^2.0.4",
     "lint-staged": "^11.2.6",
     "nodemon": "^2.0.14",
     "prettier": "^2.4.1",
