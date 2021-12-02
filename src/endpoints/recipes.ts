@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { formatRecipe, querySingleRecipe } from '../helpers/recipe';
 import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
 import db from '../prismaClient';
@@ -16,28 +17,8 @@ export const getAllRecipes = async (req: Request, res: Response) => {
 export const getRecipe = async (req: Request, res: Response) => {
   logger.debug(`GET /api/recipe/${req.params.recipeId}`);
   try {
-    res.json(
-      await db.recipes.findUnique({
-        where: {
-          id: parseInt(req.params.recipeId, 10),
-        },
-        include: {
-          Ingredients: true,
-          Instructions: {
-            orderBy: {
-              ordering: 'asc',
-            },
-            include: {
-              Blocks: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      })
-    );
+    const data = await querySingleRecipe(req.params.recipeId);
+    res.json(formatRecipe(data));
   } catch (e) {
     queryErrorHanlder(e, `GET /api/recipe/${req.params.recipeId}`, res);
   }

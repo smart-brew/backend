@@ -1,18 +1,14 @@
 import { Request, Response } from 'express';
+
 import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
-import db from '../prismaClient';
+import { formatFunctions, queryFunctionTemplates } from '../helpers/functions';
 
 const getAllFunctions = async (req: Request, res: Response) => {
   logger.debug(`GET /api/function`);
   try {
-    res.json(
-      await db.functionTemplates.findMany({
-        include: {
-          FunctionOptions: true,
-        },
-      })
-    );
+    const data = await queryFunctionTemplates();
+    res.json(formatFunctions(data));
   } catch (e) {
     queryErrorHanlder(e, `GET /api/function`, res);
   }
