@@ -5,25 +5,25 @@ const db = new PrismaClient();
 
 async function main() {
   await db.functionTemplates.upsert({
-    where: { code_name: 'SET_TEMPERATURE' },
+    where: { codeName: 'SET_TEMPERATURE' },
     update: {},
     create: {
-      code_name: 'SET_TEMPERATURE',
+      codeName: 'SET_TEMPERATURE',
       name: 'Temperature',
       category: 'TEMPERATURE',
       units: '°C',
-      input_type: 'float',
+      inputType: 'float',
       description: 'Sets temerature for selected chamber',
       FunctionOptions: {
         create: [
           {
             name: 'Chamber 1',
-            code_name: 'TEMP_1',
+            codeName: 'TEMP_1',
             module: 1,
           },
           {
             name: 'Chamber 2',
-            code_name: 'TEMP_2',
+            codeName: 'TEMP_2',
             module: 1,
           },
         ],
@@ -32,25 +32,25 @@ async function main() {
   });
 
   await db.functionTemplates.upsert({
-    where: { code_name: 'SET_MOTOR_SPEED' },
+    where: { codeName: 'SET_MOTOR_SPEED' },
     update: {},
     create: {
-      code_name: 'SET_MOTOR_SPEED',
+      codeName: 'SET_MOTOR_SPEED',
       name: 'Motor',
       category: 'MOTOR',
       units: 'RMP',
-      input_type: 'float',
+      inputType: 'float',
       description: 'Sets rpms for selected motor',
       FunctionOptions: {
         create: [
           {
             name: 'Motor 1',
-            code_name: 'MOTOR_1',
+            codeName: 'MOTOR_1',
             module: 1,
           },
           {
             name: 'Motor 2',
-            code_name: 'MOTOR_2',
+            codeName: 'MOTOR_2',
             module: 1,
           },
         ],
@@ -59,10 +59,10 @@ async function main() {
   });
 
   await db.functionTemplates.upsert({
-    where: { code_name: 'TRANSFER_LIQUIDS' },
+    where: { codeName: 'TRANSFER_LIQUIDS' },
     update: {},
     create: {
-      code_name: 'TRANSFER_LIQUIDS',
+      codeName: 'TRANSFER_LIQUIDS',
       name: 'Transfer liquids',
       category: 'PUMP',
       description: 'Transfers liquids from first chamber to second',
@@ -70,7 +70,7 @@ async function main() {
         create: [
           {
             name: 'Pump 1',
-            code_name: 'PUMP_1',
+            codeName: 'PUMP_1',
             module: 1,
           },
         ],
@@ -79,10 +79,10 @@ async function main() {
   });
 
   await db.functionTemplates.upsert({
-    where: { code_name: 'UNLOAD' },
+    where: { codeName: 'UNLOAD' },
     update: {},
     create: {
-      code_name: 'UNLOAD',
+      codeName: 'UNLOAD',
       name: 'Unload',
       category: 'UNLOADER',
       description: 'Unloads selected ingredient into chamber',
@@ -90,22 +90,22 @@ async function main() {
         create: [
           {
             name: 'Fermentables',
-            code_name: 'FERMENTABLE',
+            codeName: 'FERMENTABLE',
             module: 1,
           },
           {
             name: 'Yeast',
-            code_name: 'YEAST',
+            codeName: 'YEAST',
             module: 1,
           },
           {
             name: 'Hops',
-            code_name: 'HOPS',
+            codeName: 'HOPS',
             module: 1,
           },
           {
             name: 'Other',
-            code_name: 'OTHER',
+            codeName: 'OTHER',
             module: 1,
           },
         ],
@@ -114,26 +114,26 @@ async function main() {
   });
 
   await db.functionTemplates.upsert({
-    where: { code_name: 'WAIT' },
+    where: { codeName: 'WAIT' },
     update: {},
     create: {
-      code_name: 'WAIT',
+      codeName: 'WAIT',
       name: 'Wait',
       category: 'SYSTEM',
       units: 'Minutes',
-      input_type: 'float',
+      inputType: 'float',
       description: 'System will wait for given amount of minues',
     },
   });
 
   await db.functionTemplates.upsert({
-    where: { code_name: 'MANUAL' },
+    where: { codeName: 'MANUAL' },
     update: {},
     create: {
-      code_name: 'MANUAL',
+      codeName: 'MANUAL',
       name: 'Manual step',
       category: 'SYSTEM',
-      input_type: 'string',
+      inputType: 'string',
       description: 'System will wait for manual inervention',
     },
   });
@@ -193,12 +193,12 @@ async function main() {
             param: { rpms: '100' },
             FunctionTemplates: {
               connect: {
-                code_name: 'SET_MOTOR_SPEED',
+                codeName: 'SET_MOTOR_SPEED',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'MOTOR_1',
+                codeName: 'MOTOR_1',
               },
             },
             Blocks: {
@@ -217,7 +217,7 @@ async function main() {
             param: { duration: '5' },
             FunctionTemplates: {
               connect: {
-                code_name: 'WAIT',
+                codeName: 'WAIT',
               },
             },
             Blocks: {
@@ -236,12 +236,12 @@ async function main() {
             param: { temp: '60' },
             FunctionTemplates: {
               connect: {
-                code_name: 'SET_TEMPERATURE',
+                codeName: 'SET_TEMPERATURE',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'TEMP_1',
+                codeName: 'TEMP_1',
               },
             },
             Blocks: {
@@ -259,12 +259,12 @@ async function main() {
             ordering: 4,
             FunctionTemplates: {
               connect: {
-                code_name: 'UNLOAD',
+                codeName: 'UNLOAD',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'FERMENTABLE',
+                codeName: 'FERMENTABLE',
               },
             },
             Blocks: {
@@ -352,12 +352,12 @@ async function main() {
             param: { temp: '100' },
             FunctionTemplates: {
               connect: {
-                code_name: 'SET_TEMPERATURE',
+                codeName: 'SET_TEMPERATURE',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'TEMP_1',
+                codeName: 'TEMP_1',
               },
             },
             Blocks: {
@@ -376,7 +376,7 @@ async function main() {
             param: { duration: '20' },
             FunctionTemplates: {
               connect: {
-                code_name: 'WAIT',
+                codeName: 'WAIT',
               },
             },
             Blocks: {
@@ -395,7 +395,7 @@ async function main() {
             param: { text: 'Do something' },
             FunctionTemplates: {
               connect: {
-                code_name: 'MANUAL',
+                codeName: 'MANUAL',
               },
             },
             Blocks: {
@@ -413,12 +413,12 @@ async function main() {
             ordering: 4,
             FunctionTemplates: {
               connect: {
-                code_name: 'UNLOAD',
+                codeName: 'UNLOAD',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'HOPS',
+                codeName: 'HOPS',
               },
             },
             Blocks: {
@@ -436,12 +436,12 @@ async function main() {
             ordering: 5,
             FunctionTemplates: {
               connect: {
-                code_name: 'TRANSFER_LIQUIDS',
+                codeName: 'TRANSFER_LIQUIDS',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'PUMP_1',
+                codeName: 'PUMP_1',
               },
             },
             Blocks: {
@@ -460,12 +460,12 @@ async function main() {
             param: { rpm: '200' },
             FunctionTemplates: {
               connect: {
-                code_name: 'SET_MOTOR_SPEED',
+                codeName: 'SET_MOTOR_SPEED',
               },
             },
             FunctionOptions: {
               connect: {
-                code_name: 'MOTOR_2',
+                codeName: 'MOTOR_2',
               },
             },
             Blocks: {

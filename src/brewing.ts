@@ -54,7 +54,7 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   // update instruction status
   if (
     loadedRecipe?.Instructions[0]?.FunctionTemplates?.category === category &&
-    loadedRecipe?.Instructions[0]?.FunctionOptions?.code_name === newData.DEVICE
+    loadedRecipe?.Instructions[0]?.FunctionOptions?.codeName === newData.DEVICE
   ) {
     state.instruction.status = newData.STATE;
 
@@ -129,9 +129,9 @@ function executeInstruction() {
   const moduleID = currInst.FunctionOptions.module;
   const data = JSON.stringify({
     moduleId: currInst.FunctionOptions.module,
-    DEVICE: currInst.FunctionOptions.code_name,
+    DEVICE: currInst.FunctionOptions.codeName,
     CATEGORY: currInst.FunctionTemplates.category,
-    INSTRUCTION: currInst.FunctionTemplates.code_name,
+    INSTRUCTION: currInst.FunctionTemplates.codeName,
     PARAMS: Object.values(currInst.param)[0], // TODO - Peto - Toto nejako lepsie vymysliet - ziskat z toho template ze presne ako sa to vola ten param
   });
   sendInstruction(moduleID, data);

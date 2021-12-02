@@ -59,13 +59,13 @@ export const loadRecipe = async (req: Request, res: Response) => {
           include: {
             FunctionTemplates: {
               select: {
-                code_name: true,
+                codeName: true,
                 category: true,
               },
             },
             FunctionOptions: {
               select: {
-                code_name: true,
+                codeName: true,
                 module: true,
               },
             },
@@ -97,13 +97,13 @@ export const createRecipe = async (req: Request, res: Response) => {
       },
     };
 
-    elem.FunctionTemplates = { connect: { id: elem.function_template_id } };
-    delete elem.function_template_id;
+    elem.FunctionTemplates = { connect: { id: elem.functionTemplateId } };
+    delete elem.functionTemplateId;
     delete elem.Block;
 
     if (elem.function_option_id) {
-      elem.FunctionOptions = { connect: { id: elem.function_option_id } };
-      delete elem.function_option_id;
+      elem.FunctionOptions = { connect: { id: elem.functionOptionId } };
+      delete elem.functionOptionId;
     }
     return elem;
   });
