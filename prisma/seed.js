@@ -190,7 +190,7 @@ async function main() {
         create: [
           {
             ordering: 1,
-            param: { rpms: '100' },
+            param: '100',
             FunctionTemplates: {
               connect: {
                 codeName: 'SET_MOTOR_SPEED',
@@ -214,7 +214,7 @@ async function main() {
           },
           {
             ordering: 2,
-            param: { duration: '5' },
+            param: '5',
             FunctionTemplates: {
               connect: {
                 codeName: 'WAIT',
@@ -233,7 +233,7 @@ async function main() {
           },
           {
             ordering: 3,
-            param: { temp: '60' },
+            param: '60',
             FunctionTemplates: {
               connect: {
                 codeName: 'SET_TEMPERATURE',
@@ -349,7 +349,7 @@ async function main() {
         create: [
           {
             ordering: 1,
-            param: { temp: '100' },
+            param: '100',
             FunctionTemplates: {
               connect: {
                 codeName: 'SET_TEMPERATURE',
@@ -373,7 +373,7 @@ async function main() {
           },
           {
             ordering: 2,
-            param: { duration: '20' },
+            param: '20',
             FunctionTemplates: {
               connect: {
                 codeName: 'WAIT',
@@ -392,7 +392,7 @@ async function main() {
           },
           {
             ordering: 3,
-            param: { text: 'Do something' },
+            param: 'Do something',
             FunctionTemplates: {
               connect: {
                 codeName: 'MANUAL',
@@ -457,7 +457,7 @@ async function main() {
           },
           {
             ordering: 6,
-            param: { rpm: '200' },
+            param: '200',
             FunctionTemplates: {
               connect: {
                 codeName: 'SET_MOTOR_SPEED',
