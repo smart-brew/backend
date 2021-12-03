@@ -36,3 +36,29 @@ export interface RecipeApi {
   Instructions: InstructionApi[];
   Ingredients: IngredientsApi[];
 }
+
+export type IngredientApiUpload = {
+  id: number;
+  recipeId: number;
+  name: string;
+  amount: number;
+  type: string;
+  units: string;
+};
+
+export type InstructionApiUpload = {
+  templateId: number;
+  blockId: number;
+  blockName: string;
+  param: number | string | null;
+  optionCodeName: string | null;
+  ordering: number;
+};
+
+export interface RecipeApiUpload {
+  name: string;
+  description: string;
+  locked: boolean;
+  Ingredients: IngredientApiUpload[];
+  Instructions: InstructionApiUpload[];
+}
