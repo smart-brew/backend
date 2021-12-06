@@ -3,6 +3,7 @@ import { updateInstructions, updateStatus } from './brewing';
 
 import { ReceivedModuleData } from './types/ModuleData';
 import { WSClient } from './types/WebSocket';
+import logger from './logger';
 
 const clients: WSClient[] = [];
 
@@ -62,7 +63,7 @@ export const sendInstruction = (moduleId: number, data: string) => {
   if (wsClient) {
     wsClient.send(data);
   } else {
-    console.log('Error, module not connected');
+    logger.error(`Module not connected`);
     // TODO error handle
   }
 };

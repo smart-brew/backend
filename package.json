@@ -16,7 +16,7 @@
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "test": "yarn dotenv -e .dev.env  jest -i"
+    "test": "yarn dotenv -e .dev.env jest -i --forceExit"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
