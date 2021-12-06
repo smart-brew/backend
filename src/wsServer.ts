@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
-import { updateInstructions, updateStatus } from './brewing';
+import { abortBrewing, updateInstructions, updateStatus } from './brewing';
+import logger from './logger';
 
 import { ReceivedModuleData } from './types/ModuleData';
 import { WSClient } from './types/WebSocket';
@@ -9,19 +10,17 @@ const clients: WSClient[] = [];
 
 const startNewWss = (WS_PORT: number) => {
   const wss = new WebSocketServer({ port: WS_PORT }, () => {
-    console.log('WS Server is running on PORT:', WS_PORT);
+    logger.info(`WS Server is running on PORT: ${WS_PORT}`);
   });
   wss.on('connection', (ws: WSClient) => {
     const wsClient = ws;
-    console.log('Client connected');
+    logger.info('WS client connected');
     clients.push(wsClient);
 
     wsClient.on('message', (message) => {
       const data: ReceivedModuleData = JSON.parse(message.toString());
       wsClient.moduleId = data.moduleId;
-      console.log('Sprava prijata cez websocket!');
-      // console.log(data);
-
+      logger.child({ data }).debug('Message recieved on WS');
       // update current system data, with the new data
       updateStatus(data);
       updateInstructions();
@@ -41,7 +40,7 @@ const startNewWss = (WS_PORT: number) => {
       const wsClient = client;
 
       if (!wsClient.isAlive) {
-        console.log(
+        logger.info(
           `Client "${wsClient.moduleId}" not alive, closing websocket!`
         );
 
@@ -59,12 +58,22 @@ const startNewWss = (WS_PORT: number) => {
 };
 
 export const sendInstruction = (moduleId: number, data: string) => {
+  logger
+    .child({ data })
+    .debug(`Sending message to WS with moduleId ${moduleId}`);
   const wsClient = clients.find((client) => client.moduleId === moduleId);
   if (wsClient) {
     wsClient.send(data);
   } else {
-    logger.error(`Module not connected`);
-    // TODO error handle
+    logger.error('WS module missing');
+    abortBrewing();
   }
 };
+
+export const sendAbort = () => {
+  clients.forEach((client) => {
+    client.send({ INSTRUCTION: 'ABORT' });
+  });
+};
+
 export default startNewWss;
