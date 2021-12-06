@@ -27,9 +27,9 @@ const state: SystemData = {
     PUMP: [],
   },
   instruction: {
-    currentInstruction: 0,
+    currentInstruction: -1,
     currentValue: 0,
-    status: 'WAITING',
+    status: 'DONE',
   },
   brewStatus: 'IDLE',
 };
@@ -37,6 +37,7 @@ const state: SystemData = {
 let statusLoggerInterval: NodeJS.Timeout;
 
 const statusLogger = async () => {
+  // logger.child({ state }).debug('Status logger');
   try {
     await db.statusLogs.create({
       data: {
@@ -102,6 +103,9 @@ export const getState = () => {
 };
 
 async function startInstruction() {
+  if (state.brewStatus !== 'IN_PROGRESS' || state.instruction.status !== 'DONE')
+    return;
+  logger.debug('Starting next instruction');
   state.instruction.currentInstruction = loadedRecipe.Instructions[0].id;
   state.instruction.status = 'IN_PROGRESS';
   state.instruction.currentValue = 0;
@@ -190,14 +194,19 @@ export const abortBrewing = () => {
   clearInterval(statusLoggerInterval);
 };
 
-export const pauseBrewing = () => {
-  // TODO
-  clearInterval(statusLoggerInterval);
-};
-
-export const resumeBrewing = () => {
-  // TODO
-  statusLoggerInterval = setInterval(statusLogger, 1000);
+export const pauseOrResumeBrewing = (): string => {
+  if (state.brewStatus === 'IN_PROGRESS') {
+    state.brewStatus = 'PAUSED';
+    clearInterval(statusLoggerInterval);
+    return 'BREWING PAUSED';
+  }
+  if (state.brewStatus === 'PAUSED') {
+    state.brewStatus = 'IN_PROGRESS';
+    statusLoggerInterval = setInterval(statusLogger, 1000);
+    startInstruction();
+    return 'BREWING RESUMED';
+  }
+  return 'BREWING CANNOT BE PAUSED OR RESUMED';
 };
 
 function finishBrewing() {
@@ -209,7 +218,3 @@ function finishBrewing() {
   };
   clearInterval(statusLoggerInterval);
 }
-
-export const brewError = () => {
-  // TODO abort brewing from BE
-};

@@ -9,7 +9,6 @@ import {
   editBrewStep,
   getAllBrews,
   pauseBrew,
-  resumeBrew,
   startNewBrewing,
 } from './endpoints/brews';
 
@@ -45,10 +44,8 @@ server.get('/api/brew', getAllBrews);
 server.get('/api/data', brewStatus);
 
 server.put('/api/brew/0/start', startNewBrewing);
-
-server.post('/api/brew/:brewId/abort', abortBrew);
-server.post('/api/brew/:brewId/pause', pauseBrew);
-server.post('/api/brew/:brewId/resume', resumeBrew);
+server.post('/api/brew/0/abort', abortBrew);
+server.post('/api/brew/0/pause', pauseBrew);
 
 server.post('/api/brew/:brewId/step/:stepId', editBrewStep);
 server.post('/api/brew/:brewId/step/:stepId/confirm', confirmStep);
