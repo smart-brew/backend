@@ -5,7 +5,12 @@ import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
 import { StartBrewBody } from '../types/Endpoints';
 import db from '../prismaClient';
-import { startBrewing, getState, pauseOrResumeBrewing } from '../brewing';
+import {
+  startBrewing,
+  getState,
+  pauseOrResumeBrewing,
+  abortBrewing,
+} from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
   logger.debug(`GET /api/data`);
@@ -40,7 +45,8 @@ export const getAllBrews = async (req: Request, res: Response) => {
 };
 
 export const abortBrew = (req: Request, res: Response) => {
-  res.status(200).send('TODO: abortBrew');
+  logger.debug(`POST /api/brew/0/abort`);
+  res.status(200).json(abortBrewing());
 };
 
 export const pauseBrew = (req: Request, res: Response) => {

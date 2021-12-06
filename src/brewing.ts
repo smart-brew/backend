@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { sendInstruction } from './wsServer';
+import { sendAbort, sendInstruction } from './wsServer';
 import logger from './logger';
 import db from './prismaClient';
 import queryErrorHanlder from './queryErrorHandler';
@@ -15,7 +15,7 @@ import {
 import { LoadedRecipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
 
-let loadedRecipe: LoadedRecipe | null = null;
+let loadedRecipe: LoadedRecipe;
 let brewId: number;
 let currentInstructionLogId: number;
 
@@ -54,8 +54,8 @@ const statusLogger = async () => {
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   // update instruction status
   if (
-    loadedRecipe?.Instructions[0]?.FunctionTemplates?.category === category &&
-    loadedRecipe?.Instructions[0]?.FunctionOptions?.codeName === newData.DEVICE
+    loadedRecipe.Instructions[0].FunctionTemplates.category === category &&
+    loadedRecipe.Instructions[0].FunctionOptions?.codeName === newData.DEVICE
   ) {
     state.instruction.status = newData.STATE;
 
@@ -103,9 +103,8 @@ export const getState = () => {
 };
 
 async function startInstruction() {
-  if (state.brewStatus !== 'IN_PROGRESS' || state.instruction.status !== 'DONE')
+  if (state.brewStatus !== 'IN_PROGRESS' && state.instruction.status !== 'DONE')
     return;
-  logger.debug('Starting next instruction');
   state.instruction.currentInstruction = loadedRecipe.Instructions[0].id;
   state.instruction.status = 'IN_PROGRESS';
   state.instruction.currentValue = 0;
@@ -170,6 +169,8 @@ async function updateInstructionLog() {
 
 //  move to next one by ordering number or finishBrewing
 function moveToNextInstruction() {
+  if (state.brewStatus !== 'IN_PROGRESS' && state.brewStatus !== 'PAUSED')
+    logger.info('Cannot move to next instruction');
   updateInstructionLog();
 
   loadedRecipe.Instructions.shift();
@@ -190,17 +191,23 @@ export const startBrewing = (id: number) => {
 };
 
 export const abortBrewing = () => {
-  // TODO
+  logger.info(`Aborting brewing with id ${brewId}`);
+  state.brewStatus = 'IDLE';
+  loadedRecipe = undefined;
   clearInterval(statusLoggerInterval);
+  sendAbort();
+  return 'BREWING ABORTED';
 };
 
 export const pauseOrResumeBrewing = (): string => {
   if (state.brewStatus === 'IN_PROGRESS') {
+    logger.info('Pausing brewing');
     state.brewStatus = 'PAUSED';
     clearInterval(statusLoggerInterval);
     return 'BREWING PAUSED';
   }
   if (state.brewStatus === 'PAUSED') {
+    logger.info('Resuming brewing');
     state.brewStatus = 'IN_PROGRESS';
     statusLoggerInterval = setInterval(statusLogger, 1000);
     startInstruction();
@@ -210,11 +217,13 @@ export const pauseOrResumeBrewing = (): string => {
 };
 
 function finishBrewing() {
-  state.brewStatus = 'FINISHED';
+  logger.info('Brewing finished');
+  state.brewStatus = 'IDLE';
   state.instruction = {
     currentInstruction: -1,
     currentValue: 0,
     status: 'WAITING',
   };
+  loadedRecipe = undefined;
   clearInterval(statusLoggerInterval);
 }
