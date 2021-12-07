@@ -4,7 +4,6 @@ import logger from './logger';
 
 import { ReceivedModuleData } from './types/ModuleData';
 import { WSClient } from './types/WebSocket';
-import logger from './logger';
 
 const clients: WSClient[] = [];
 
