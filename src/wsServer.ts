@@ -3,7 +3,7 @@ import { abortBrewing, updateInstructions, updateStatus } from './brewing';
 import logger from './logger';
 
 import { ReceivedModuleData } from './types/ModuleData';
-import { WSClient } from './types/WebSocket';
+import { WSClient, Instruction } from './types/WebSocket';
 
 const clients: WSClient[] = [];
 
@@ -25,7 +25,7 @@ const startNewWss = (WS_PORT: number) => {
       updateInstructions();
     });
 
-    wsClient.send('WS has succesfully connected to server');
+    wsClient.send({ type: 'hello' });
 
     wsClient.isAlive = true;
     wsClient.on('pong', () => {
@@ -56,11 +56,11 @@ const startNewWss = (WS_PORT: number) => {
   }, 10000);
 };
 
-export const sendInstruction = (moduleId: number, data: string) => {
+export const sendInstruction = (data: Instruction) => {
   logger
     .child({ data })
-    .debug(`Sending message to WS with moduleId ${moduleId}`);
-  const wsClient = clients.find((client) => client.moduleId === moduleId);
+    .debug(`Sending message to WS with moduleId ${data.moduleId}`);
+  const wsClient = clients.find((client) => client.moduleId === data.moduleId);
   if (wsClient) {
     wsClient.send(data);
   } else {
@@ -71,7 +71,7 @@ export const sendInstruction = (moduleId: number, data: string) => {
 
 export const sendAbort = () => {
   clients.forEach((client) => {
-    client.send({ INSTRUCTION: 'ABORT' });
+    client.send({ type: 'abort' });
   });
 };
 
