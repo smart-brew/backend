@@ -129,15 +129,15 @@ async function startInstruction() {
 // sends instruction to module via websocket
 function executeInstruction() {
   const currInst = loadedRecipe.Instructions[0];
-  const moduleID = currInst.FunctionOptions.module;
-  const data = JSON.stringify({
+
+  sendInstruction({
+    type: 'instruction',
     moduleId: currInst.FunctionOptions.module,
-    DEVICE: currInst.FunctionOptions.codeName,
-    CATEGORY: currInst.FunctionTemplates.category,
-    INSTRUCTION: currInst.FunctionTemplates.codeName,
-    PARAMS: Object.values(currInst.param)[0], // TODO - Peto - Toto nejako lepsie vymysliet - ziskat z toho template ze presne ako sa to vola ten param
+    device: currInst.FunctionOptions.codeName,
+    category: currInst.FunctionTemplates.category,
+    instruction: currInst.FunctionTemplates.codeName,
+    params: currInst.param,
   });
-  sendInstruction(moduleID, data);
 }
 
 export function updateInstructions() {
