@@ -11,7 +11,7 @@ import { setRecipe } from '../brewing';
 export const getAllRecipes = async (req: Request, res: Response) => {
   logger.debug(`GET /api/recipe`);
   try {
-    res.json(await db.recipes.findMany({}));
+    res.json(await db.recipes.findMany({ where: { deletedAt: null } }));
   } catch (e) {
     queryErrorHanlder(e, `GET /api/recipe`, res);
   }

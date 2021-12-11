@@ -12,81 +12,83 @@ datasource db {
 }
 
 model Brewings {
-  id               Int               @id @default(autoincrement())
-  recipeId         Int?
-  notes            String?           @db.VarChar
-  evaluation       Int?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  Recipes          Recipes?          @relation(fields: [recipeId], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  InstructionLogs  InstructionLogs[]
-  StatusLogs       StatusLogs[]
+  id              Int               @id @default(autoincrement())
+  recipeId        Int?
+  notes           String?           @db.VarChar
+  evaluation      Int?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  Recipes         Recipes?          @relation(fields: [recipeId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  InstructionLogs InstructionLogs[]
+  StatusLogs      StatusLogs[]
 }
 
 model FunctionTemplates {
-  id               Int               @id @default(autoincrement())
-  codeName         String            @unique @db.VarChar
-  name             String            @db.VarChar
-  category         String            @db.VarChar
-  units            String?           @db.VarChar
-  inputType        String?           @db.VarChar
-  description      String?           @db.VarChar
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  FunctionOptions  FunctionOptions[]
-  Instructions     Instructions[]
+  id              Int               @id @default(autoincrement())
+  codeName        String            @unique @db.VarChar
+  name            String            @db.VarChar
+  category        String            @db.VarChar
+  units           String?           @db.VarChar
+  inputType       String?           @db.VarChar
+  description     String?           @db.VarChar
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  FunctionOptions FunctionOptions[]
+  Instructions    Instructions[]
 }
 
 model InstructionLogs {
-  id             Int           @id @default(autoincrement())
-  brewingId      Int
-  instructionId  Int?
-  finished       Boolean       @default(false) @db.Boolean
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  Brewings       Brewings      @relation(fields: [brewingId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Instructions   Instructions? @relation(fields: [instructionId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  id            Int           @id @default(autoincrement())
+  brewingId     Int
+  instructionId Int?
+  finished      Boolean       @default(false) @db.Boolean
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  Brewings      Brewings      @relation(fields: [brewingId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Instructions  Instructions? @relation(fields: [instructionId], references: [id], onDelete: SetNull, onUpdate: NoAction)
 }
 
 model Instructions {
-  id                   Int               @id @default(autoincrement())
-  recipeId             Int
-  blockId              Int?
-  functionTemplateId   Int
-  functionOptionId     Int?
-  ordering             Int
-  param                String?           @db.VarChar
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  Recipes              Recipes           @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  FunctionOptions      FunctionOptions?  @relation(fields: [functionOptionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  FunctionTemplates    FunctionTemplates @relation(fields: [functionTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Blocks               Blocks?           @relation(fields: [blockId], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  InstructionLogs      InstructionLogs[]
+  id                 Int               @id @default(autoincrement())
+  recipeId           Int
+  blockId            Int?
+  functionTemplateId Int
+  functionOptionId   Int?
+  ordering           Int
+  param              String?           @db.VarChar
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  deletedAt          DateTime?
+  Recipes            Recipes           @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  FunctionOptions    FunctionOptions?  @relation(fields: [functionOptionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  FunctionTemplates  FunctionTemplates @relation(fields: [functionTemplateId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Blocks             Blocks?           @relation(fields: [blockId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  InstructionLogs    InstructionLogs[]
 }
 
 model FunctionOptions {
-  id                   Int               @id @default(autoincrement())
-  functionTemplateId   Int
-  name                 String            @db.VarChar
-  codeName             String            @unique @db.VarChar
-  module               Int
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  FunctionTemplates    FunctionTemplates @relation(fields: [functionTemplateId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Instructions         Instructions[]
+  id                 Int               @id @default(autoincrement())
+  functionTemplateId Int
+  name               String            @db.VarChar
+  codeName           String            @unique @db.VarChar
+  module             Int
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  FunctionTemplates  FunctionTemplates @relation(fields: [functionTemplateId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Instructions       Instructions[]
 }
 
 model Ingredients {
-  id         Int      @id @default(autoincrement())
-  recipeId   Int
-  name       String?  @db.VarChar
-  amount     Float?
-  type       String?  @db.VarChar
-  units      String?  @db.VarChar
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Recipes    Recipes  @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id        Int       @id @default(autoincrement())
+  recipeId  Int
+  name      String?   @db.VarChar
+  amount    Float?
+  type      String?   @db.VarChar
+  units     String?   @db.VarChar
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  Recipes   Recipes   @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Recipes {
@@ -96,19 +98,20 @@ model Recipes {
   locked       Boolean        @default(false) @db.Boolean
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
   Brewings     Brewings[]
   Instructions Instructions[]
   Ingredients  Ingredients[]
 }
 
 model StatusLogs {
-  id         Int      @id @default(autoincrement())
-  brewingId  Int
-  status     String?  @db.VarChar
-  params     Json     @db.Json
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Brewings   Brewings @relation(fields: [brewingId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id        Int      @id @default(autoincrement())
+  brewingId Int
+  status    String?  @db.VarChar
+  params    Json     @db.Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Brewings  Brewings @relation(fields: [brewingId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Blocks {

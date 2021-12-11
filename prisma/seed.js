@@ -138,18 +138,6 @@ async function main() {
     },
   });
 
-  await db.recipes.deleteMany({
-    where: {
-      name: 'TEST_RECIPE_1',
-    },
-  });
-
-  await db.recipes.deleteMany({
-    where: {
-      name: 'TEST_RECIPE_2',
-    },
-  });
-
   const recept1 = await db.recipes.upsert({
     where: { name: 'Smoky Grove Lichtenhainer' },
     update: {},
