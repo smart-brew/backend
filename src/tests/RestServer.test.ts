@@ -77,7 +77,6 @@ describe('Load recipe Smoky Grove Lichtenhainer', () => {
 
 describe('Add new recipe', () => {
   const name = `Testing recipe ${Math.random() * 10000}`;
-  console.log(`Meno !!! -> ${name}`);
   test('PUT /api/recipe', async () => {
     const newRecipe = {
       name,
