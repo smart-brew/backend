@@ -12,7 +12,7 @@ describe('Get data devices info data', () => {
 });
 
 describe('Get all recipes', () => {
-  test('GET /api/recipe/recipe', async () => {
+  test('GET /api/recipe', async () => {
     const response = await supertest(server).get(`/api/recipe`).send();
     expect(JSON.parse(response.text)).toEqual(
       expect.arrayContaining([
@@ -76,9 +76,11 @@ describe('Load recipe Smoky Grove Lichtenhainer', () => {
 });
 
 describe('Add new recipe', () => {
+  const name = `Testing recipe ${Math.random() * 10000}`;
+  console.log(`Meno !!! -> ${name}`);
   test('PUT /api/recipe', async () => {
     const newRecipe = {
-      name: `Testing recipe ${Math.random() * 10000}`,
+      name,
       description: "I have no idea what I'am doing",
       locked: false,
       Ingredients: [
@@ -120,6 +122,15 @@ describe('Add new recipe', () => {
     console.log(response.text);
     expect(JSON.parse(response.text)?.id).toBeDefined();
   });
+
+  afterAll(async () => {
+    // delete created recipe
+    await db.recipes.delete({
+      where: {
+        name,
+      },
+    });
+  });
 });
 
 describe.skip('Load, start loaded recipe and abort test', () => {
@@ -150,9 +161,4 @@ describe.skip('Load, start loaded recipe and abort test', () => {
 //       // queryErrorHanlder(e, 'Connection test');
 //     }
 //   })();
-// });
-
-// afterAll(async () => {
-//   db.$disconnect();
-//   wss.close();
 // });
