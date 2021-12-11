@@ -199,13 +199,17 @@ export const abortBrewing = () => {
   return 'BREWING ABORTED';
 };
 
-export const pauseOrResumeBrewing = (): string => {
+export const pauseBrewing = (): string => {
   if (state.brewStatus === 'IN_PROGRESS') {
     logger.info('Pausing brewing');
     state.brewStatus = 'PAUSED';
     clearInterval(statusLoggerInterval);
     return 'BREWING PAUSED';
   }
+  return 'BREWING CANNOT BE PAUSED';
+};
+
+export const resumeBrewing = (): string => {
   if (state.brewStatus === 'PAUSED') {
     logger.info('Resuming brewing');
     state.brewStatus = 'IN_PROGRESS';
@@ -213,7 +217,7 @@ export const pauseOrResumeBrewing = (): string => {
     startInstruction();
     return 'BREWING RESUMED';
   }
-  return 'BREWING CANNOT BE PAUSED OR RESUMED';
+  return 'BREWING CANNOT BE RESUMED';
 };
 
 function finishBrewing() {

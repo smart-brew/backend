@@ -8,8 +8,9 @@ import db from '../prismaClient';
 import {
   startBrewing,
   getState,
-  pauseOrResumeBrewing,
   abortBrewing,
+  pauseBrewing,
+  resumeBrewing,
 } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
@@ -51,7 +52,12 @@ export const abortBrew = (req: Request, res: Response) => {
 
 export const pauseBrew = (req: Request, res: Response) => {
   logger.debug(`POST /api/brew/0/pause`);
-  res.status(200).json(pauseOrResumeBrewing());
+  res.status(200).json(pauseBrewing());
+};
+
+export const resumeBrew = (req: Request, res: Response) => {
+  logger.debug(`POST /api/brew/0/resume`);
+  res.status(200).json(resumeBrewing());
 };
 
 export const editBrewStep = (req: Request, res: Response) => {
@@ -64,7 +70,7 @@ export const confirmStep = (req: Request, res: Response) => {
 
 export const shutdown = (req: Request, res: Response) => {
   logger.debug(`POST /api/shutdown`);
-  exec('sudo shutdown -h now', (error, stdout, stderr) => {
+  exec('sudo shutdown -h now', () => {
     res.status(200).send('Shutting down.');
     logger.info('Shutting down.');
   });
