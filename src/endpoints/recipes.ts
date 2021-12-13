@@ -8,6 +8,19 @@ import logger from '../logger';
 import db from '../prismaClient';
 import { setRecipe } from '../brewing';
 
+db.$use(async (params, next) => {
+  // Check incoming query type
+  if (params.model == 'Recipes') {
+    if (params.action == 'delete') {
+      // Delete queries
+      // Change action to an update
+      params.action = 'update'
+      params.args['data'] = {deletedAt: new Date()}
+    }
+  }
+  return next(params)
+})
+
 export const getAllRecipes = async (req: Request, res: Response) => {
   logger.debug(`GET /api/recipe`);
   try {
@@ -142,3 +155,18 @@ export const createRecipe = async (req: Request, res: Response) => {
     queryErrorHanlder(e, `PUT /api/recipe`, res);
   }
 };
+
+export const deleteRecipe = async (req: Request, res: Response) => {
+  logger.debug(`POST /api/recipe/${req.params.recipeId}/delete`);
+  try {
+    await db.recipes.delete({
+      where: {
+        id: parseInt(req.params.recipeId, 10),
+      },
+    });
+    const data = await querySingleRecipe(req.params.recipeId);
+    res.json(formatRecipe(data));
+  } catch (e) {
+    queryErrorHanlder(e, `POST /api/recipe/${req.params.recipeId}/delete`);
+  }
+}
