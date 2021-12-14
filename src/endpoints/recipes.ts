@@ -34,9 +34,18 @@ export const getRecipe = async (req: Request, res: Response) => {
   logger.debug(`GET /api/recipe/${req.params.recipeId}`);
   try {
     const data = await querySingleRecipe(req.params.recipeId);
+    if (!data) throw new Error('Recipe not found');
+
     res.json(formatRecipe(data));
   } catch (e) {
-    queryErrorHanlder(e, `GET /api/recipe/${req.params.recipeId}`, res);
+    console.log(e.message);
+    console.log(e.message === 'Recipe not found');
+
+    if (e.message === 'Recipe not found') {
+      queryErrorHanlder(e, `GET /api/recipe/${req.params.recipeId}`, res, 404);
+    } else {
+      queryErrorHanlder(e, `GET /api/recipe/${req.params.recipeId}`, res);
+    }
   }
 };
 

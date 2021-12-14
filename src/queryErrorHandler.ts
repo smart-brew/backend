@@ -8,7 +8,12 @@ import { Response } from 'express';
 import logger from './logger';
 import { context, QueryError } from './types/QueryError';
 
-const queryErrorHanlder = (e: QueryError, source: string, res?: Response) => {
+const queryErrorHanlder = (
+  e: QueryError,
+  source: string,
+  res?: Response,
+  code?: number
+) => {
   let ctx: context = {
     errorMessage: e.message,
   };
@@ -28,7 +33,8 @@ const queryErrorHanlder = (e: QueryError, source: string, res?: Response) => {
     };
 
   logger.child({ context: ctx }).error(source);
-  if (res) res.json({ error: e.message });
+  if (res && code) res.status(code).json({ error: e.message });
+  else if (res) res.json({ error: e.message });
 };
 
 export default queryErrorHanlder;
