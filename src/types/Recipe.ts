@@ -38,8 +38,8 @@ export interface RecipeApi {
 }
 
 export type IngredientApiUpload = {
-  id: number;
-  recipeId: number;
+  id?: number;
+  recipeId?: number;
   name: string;
   amount: number;
   type: string;
@@ -48,7 +48,7 @@ export type IngredientApiUpload = {
 
 export type InstructionApiUpload = {
   templateId: number;
-  blockId: number;
+  blockId?: number;
   blockName: string;
   param: number | string | null;
   optionCodeName: string | null;

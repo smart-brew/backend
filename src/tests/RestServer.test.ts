@@ -1,7 +1,7 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import supertest from 'supertest';
 import db from '../prismaClient';
 import server from '../RestServer';
+import { RecipeApiUpload } from '../types/Recipe';
 
 describe('Get data devices info data', () => {
   test('GET /api/data', async () => {
@@ -78,7 +78,7 @@ describe('Load recipe Smoky Grove Lichtenhainer', () => {
 describe('Add new recipe', () => {
   const name = `Testing recipe ${Math.random() * 10000}`;
   test('PUT /api/recipe', async () => {
-    const newRecipe = {
+    const newRecipe: RecipeApiUpload = {
       name,
       description: "I have no idea what I'am doing",
       locked: false,
@@ -97,20 +97,21 @@ describe('Add new recipe', () => {
         },
       ],
       Instructions: [
-        {
-          templateId: 4,
-          param: null,
-          optionCodeName: 'FERMENTABLE',
-          blockName: 'Fermentation',
-          ordering: 4,
-        },
-        {
-          templateId: 1,
-          param: '60',
-          optionCodeName: 'TEMP_1',
-          blockName: 'Fermentation',
-          ordering: 3,
-        },
+        // TODO - Peto - musis tieto IDcka z niekade dynamicky ziskavat, inak to nebude fungovat
+        // {
+        //   templateId: 4,
+        //   param: null,
+        //   optionCodeName: 'FERMENTABLE',
+        //   blockName: 'Fermentation',
+        //   ordering: 4,
+        // },
+        // {
+        //   templateId: 1,
+        //   param: '60',
+        //   optionCodeName: 'TEMP_1',
+        //   blockName: 'Fermentation',
+        //   ordering: 3,
+        // },
       ],
     };
     const response = await supertest(server).put(`/api/recipe`).send(newRecipe);
