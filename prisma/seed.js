@@ -1,10 +1,29 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, Prisma } = require('@prisma/client');
 
 const db = new PrismaClient();
 
-async function main() {
-  await db.functionTemplates.upsert({
+async function dropData() {
+  console.log('Removing old data...');
+  function fixName(string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+  }
+
+  const modelNames = Prisma.dmmf.datamodel.models.map((model) => model.name);
+
+  await Promise.all(
+    modelNames.map((modelName) => {
+      return db[fixName(modelName)].deleteMany();
+    })
+  );
+
+  console.log('Removed old data!');
+}
+
+async function seedData() {
+  console.log('Seeding data...');
+
+  const template1 = await db.functionTemplates.upsert({
     where: { codeName: 'SET_TEMPERATURE' },
     update: {},
     create: {
@@ -31,14 +50,16 @@ async function main() {
     },
   });
 
-  await db.functionTemplates.upsert({
+  console.log(`Template: ${template1.codeName}`);
+
+  const template2 = await db.functionTemplates.upsert({
     where: { codeName: 'SET_MOTOR_SPEED' },
     update: {},
     create: {
       codeName: 'SET_MOTOR_SPEED',
       name: 'Motor',
       category: 'MOTOR',
-      units: 'RMP',
+      units: 'RPM',
       inputType: 'float',
       description: 'Sets rpms for selected motor',
       FunctionOptions: {
@@ -58,7 +79,9 @@ async function main() {
     },
   });
 
-  await db.functionTemplates.upsert({
+  console.log(`Template: ${template2.codeName}`);
+
+  const template3 = await db.functionTemplates.upsert({
     where: { codeName: 'TRANSFER_LIQUIDS' },
     update: {},
     create: {
@@ -78,7 +101,9 @@ async function main() {
     },
   });
 
-  await db.functionTemplates.upsert({
+  console.log(`Template: ${template3.codeName}`);
+
+  const template4 = await db.functionTemplates.upsert({
     where: { codeName: 'UNLOAD' },
     update: {},
     create: {
@@ -113,7 +138,9 @@ async function main() {
     },
   });
 
-  await db.functionTemplates.upsert({
+  console.log(`Template: ${template4.codeName}`);
+
+  const template5 = await db.functionTemplates.upsert({
     where: { codeName: 'WAIT' },
     update: {},
     create: {
@@ -126,7 +153,9 @@ async function main() {
     },
   });
 
-  await db.functionTemplates.upsert({
+  console.log(`Template: ${template5.codeName}`);
+
+  const template6 = await db.functionTemplates.upsert({
     where: { codeName: 'MANUAL' },
     update: {},
     create: {
@@ -138,7 +167,9 @@ async function main() {
     },
   });
 
-  const recept1 = await db.recipes.upsert({
+  console.log(`Template: ${template6.codeName}`);
+
+  const recipe1 = await db.recipes.upsert({
     where: { name: 'Smoky Grove Lichtenhainer' },
     update: {},
     create: {
@@ -283,9 +314,9 @@ async function main() {
     },
   });
 
-  console.log(JSON.stringify(recept1, null, 2));
+  console.log(`Recipe: ${recipe1.name}`);
 
-  const recept2 = await db.recipes.upsert({
+  const recipe2 = await db.recipes.upsert({
     where: { name: 'Vanilla Cream Ale' },
     update: {},
     create: {
@@ -484,7 +515,14 @@ async function main() {
     },
   });
 
-  console.log(JSON.stringify(recept2, null, 2));
+  console.log(`Recipe: ${recipe2.name}`);
+
+  console.log('Seeded new data!');
+}
+
+async function main() {
+  await dropData();
+  await seedData();
 }
 
 main()

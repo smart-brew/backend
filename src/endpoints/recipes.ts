@@ -10,16 +10,16 @@ import { setRecipe } from '../brewing';
 
 db.$use(async (params, next) => {
   // Check incoming query type
-  if (params.model == 'Recipes') {
-    if (params.action == 'delete') {
+  if (params.model === 'Recipes') {
+    if (params.action === 'delete') {
       // Delete queries
       // Change action to an update
-      params.action = 'update'
-      params.args['data'] = {deletedAt: new Date()}
+      params.action = 'update';
+      params.args.data = { deletedAt: new Date() };
     }
   }
-  return next(params)
-})
+  return next(params);
+});
 
 export const getAllRecipes = async (req: Request, res: Response) => {
   logger.debug(`GET /api/recipe`);
@@ -169,4 +169,4 @@ export const deleteRecipe = async (req: Request, res: Response) => {
   } catch (e) {
     queryErrorHanlder(e, `POST /api/recipe/${req.params.recipeId}/delete`);
   }
-}
+};

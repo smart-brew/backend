@@ -7,15 +7,15 @@
     "build": "yarn clean && tsc",
     "clean": "rimraf dist/*",
     "dev": "nodemon --watch src -e ts,js --exec yarn start:dev",
+    "docker:down": "docker-compose down",
+    "docker:up": "docker-compose up -d",
     "format:eslint": "eslint \"**/*.{js,ts,tsx}\" --fix",
     "format:prettier": "prettier \"**/*.{cjs,html,js,json,md,ts,tsx}\" --write",
     "migrate": "yarn dotenv -e .dev.env yarn prisma migrate dev",
-    "seed": "yarn dotenv -e .dev.env yarn prisma db seed",
     "prepare": "husky install",
+    "seed": "yarn dotenv -e .dev.env yarn prisma db seed",
     "start": "node .",
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
     "test": "yarn dotenv -e .dev.env jest -i --forceExit"
   },
   "prisma": {
