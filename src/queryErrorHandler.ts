@@ -33,8 +33,7 @@ const queryErrorHanlder = (
     };
 
   logger.child({ context: ctx }).error(source);
-  if (res && code) res.status(code).json({ error: e.message });
-  else if (res) res.json({ error: e.message });
+  if (res) res.status(code || 500).json({ error: e.message });
 };
 
 export default queryErrorHanlder;
