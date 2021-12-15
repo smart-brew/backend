@@ -5,7 +5,7 @@ import getAllFunctions from './endpoints/functions';
 import {
   abortBrew,
   brewStatus,
-  confirmStep,
+  confirmManual,
   editBrewStep,
   getAllBrews,
   pauseBrew,
@@ -51,7 +51,7 @@ server.post('/api/brew/0/abort', abortBrew);
 server.post('/api/brew/0/pause', pauseBrew);
 server.post('/api/brew/0/resume', resumeBrew);
 
-server.post('/api/brew/:brewId/step/:stepId', editBrewStep);
-server.post('/api/brew/:brewId/step/:stepId/confirm', confirmStep);
+server.post('/api/brew/:brewId/instruction/:instructionId', editBrewStep);
+server.post('/api/brew/:brewId/instruction/:instructionId/done', confirmManual);
 
 export default server;

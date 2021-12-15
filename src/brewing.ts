@@ -168,7 +168,7 @@ async function updateInstructionLog() {
 }
 
 //  move to next one by ordering number or finishBrewing
-function moveToNextInstruction() {
+export function moveToNextInstruction() {
   if (state.brewStatus !== 'IN_PROGRESS' && state.brewStatus !== 'PAUSED')
     logger.info('Cannot move to next instruction');
   updateInstructionLog();
