@@ -19,8 +19,8 @@ export interface Hello {
 
 export type WsData = Instruction | Abort | Hello;
 
-export type WSClient = Omit<WebSocket, 'send'> & {
+export type WSClient = WebSocket & {
   isAlive: boolean;
   moduleId: number;
-  send: (data: WsData) => void;
+  sendJSON: (data: WsData) => void;
 };

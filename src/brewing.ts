@@ -54,6 +54,7 @@ const statusLogger = async () => {
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   // update instruction status
   if (
+    loadedRecipe &&
     loadedRecipe.Instructions[0].FunctionTemplates.category === category &&
     loadedRecipe.Instructions[0].FunctionOptions?.codeName === newData.DEVICE
   ) {

@@ -13,10 +13,12 @@ const startNewWss = (WS_PORT: number) => {
   });
   wss.on('connection', (ws: WSClient) => {
     const wsClient = ws;
+    wsClient.sendJSON = (data) => wsClient.send(JSON.stringify(data));
+
     logger.info('WS client connected');
     clients.push(wsClient);
 
-    wsClient.on('message', (message) => {
+    ws.on('message', (message) => {
       const data: ReceivedModuleData = JSON.parse(message.toString());
       wsClient.moduleId = data.moduleId;
       logger.child({ data }).debug('Message recieved on WS');
@@ -25,7 +27,7 @@ const startNewWss = (WS_PORT: number) => {
       updateInstructions();
     });
 
-    wsClient.send({ type: 'hello' });
+    wsClient.sendJSON({ type: 'hello' });
 
     wsClient.isAlive = true;
     wsClient.on('pong', () => {
@@ -62,7 +64,7 @@ export const sendInstruction = (data: Instruction) => {
     .debug(`Sending message to WS with moduleId ${data.moduleId}`);
   const wsClient = clients.find((client) => client.moduleId === data.moduleId);
   if (wsClient) {
-    wsClient.send(data);
+    wsClient.sendJSON(data);
   } else {
     logger.error('WS module missing');
     abortBrewing();
@@ -71,7 +73,7 @@ export const sendInstruction = (data: Instruction) => {
 
 export const sendAbort = () => {
   clients.forEach((client) => {
-    client.send({ type: 'abort' });
+    client.sendJSON({ type: 'abort' });
   });
 };
 
