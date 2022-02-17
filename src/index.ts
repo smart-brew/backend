@@ -21,6 +21,9 @@ startNewWss(WS_PORT);
     await db.$connect();
     logger.info('Connected to database successfully');
   } catch (e) {
-    queryErrorHanlder(e, 'Connection test');
+    queryErrorHanlder(
+      e,
+      'Cannot connect to database (make sure it is running)'
+    );
   }
 })();
