@@ -20,8 +20,8 @@ export function formatRecipe(data: RecipeDb): RecipeApi {
       param: orig.param,
       category: orig.FunctionTemplates.category,
       optionCodeName: orig.FunctionOptions?.codeName || null,
-      blockId: orig.Blocks.id,
-      blockName: orig.Blocks.name,
+      blockId: orig.Blocks?.id, // TODO FIX
+      blockName: orig.Blocks?.name,
       ordering: orig.ordering,
     };
 
