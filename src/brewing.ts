@@ -29,7 +29,7 @@ const state: SystemData = {
   instruction: {
     currentInstruction: -1,
     currentValue: 0,
-    status: 'DONE',
+    status: 'WAITING',
   },
   brewStatus: 'IDLE',
 };
