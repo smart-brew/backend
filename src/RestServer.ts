@@ -19,6 +19,7 @@ import {
   getRecipe,
   loadRecipe,
   deleteRecipe,
+  editRecipe,
 } from './endpoints/recipes';
 
 const server: Application = express();
@@ -37,6 +38,7 @@ server.get('/api/recipe', getAllRecipes);
 server.get('/api/recipe/:recipeId', getRecipe);
 
 server.put('/api/recipe', createRecipe);
+server.put('/api/recipe/:recipeId/edit', editRecipe);
 server.post('/api/recipe/:recipeId/load', loadRecipe);
 server.post('/api/recipe/:recipeId/delete', deleteRecipe);
 

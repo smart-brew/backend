@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
 import { Prisma } from '@prisma/client';
-import { querySingleRecipe } from '../helpers/recipe';
-import { loadRecipe } from '../endpoints/recipes';
+import { loadRecipeQuery, querySingleRecipe } from '../helpers/recipe';
 
-export type LoadedRecipe = Prisma.PromiseReturnType<typeof loadRecipe>;
+export type LoadedRecipe = Prisma.PromiseReturnType<typeof loadRecipeQuery>;
 export type RecipeDb = Prisma.PromiseReturnType<typeof querySingleRecipe>;
 
 export interface InstructionApi {
