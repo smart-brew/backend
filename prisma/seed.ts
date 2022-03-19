@@ -1,32 +1,26 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { PrismaClient, Prisma } = require('@prisma/client');
+import { PrismaClient, Prisma } from '@prisma/client';
+import logger from '../src/logger';
 
 const db = new PrismaClient();
 
-async function dropData() {
-  console.log('Removing old data...');
-  function fixName(string) {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-  }
-
-  const modelNames = Prisma.dmmf.datamodel.models.map((model) => model.name);
-
-  await Promise.all(
-    modelNames.map((modelName) => {
-      return db[fixName(modelName)].deleteMany();
-    })
-  );
-
-  console.log('Removed old data!');
-}
-
 async function seedData() {
-  console.log('Seeding data...');
+  logger.info('Seeding data...');
 
-  const template1 = await db.functionTemplates.upsert({
-    where: { codeName: 'SET_TEMPERATURE' },
-    update: {},
-    create: {
+  const recipeInclude: Prisma.RecipesInclude = {
+    Ingredients: true,
+    Instructions: {
+      include: {
+        Blocks: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    },
+  };
+
+  const templates: Prisma.FunctionTemplatesCreateInput[] = [
+    {
       codeName: 'SET_TEMPERATURE',
       name: 'Temperature',
       category: 'TEMPERATURE',
@@ -48,14 +42,7 @@ async function seedData() {
         ],
       },
     },
-  });
-
-  console.log(`Template: ${template1.codeName}`);
-
-  const template2 = await db.functionTemplates.upsert({
-    where: { codeName: 'SET_MOTOR_SPEED' },
-    update: {},
-    create: {
+    {
       codeName: 'SET_MOTOR_SPEED',
       name: 'Motor',
       category: 'MOTOR',
@@ -77,14 +64,7 @@ async function seedData() {
         ],
       },
     },
-  });
-
-  console.log(`Template: ${template2.codeName}`);
-
-  const template3 = await db.functionTemplates.upsert({
-    where: { codeName: 'TRANSFER_LIQUIDS' },
-    update: {},
-    create: {
+    {
       codeName: 'TRANSFER_LIQUIDS',
       name: 'Transfer liquids',
       category: 'PUMP',
@@ -99,14 +79,7 @@ async function seedData() {
         ],
       },
     },
-  });
-
-  console.log(`Template: ${template3.codeName}`);
-
-  const template4 = await db.functionTemplates.upsert({
-    where: { codeName: 'UNLOAD' },
-    update: {},
-    create: {
+    {
       codeName: 'UNLOAD',
       name: 'Unload',
       category: 'UNLOADER',
@@ -136,14 +109,7 @@ async function seedData() {
         ],
       },
     },
-  });
-
-  console.log(`Template: ${template4.codeName}`);
-
-  const template5 = await db.functionTemplates.upsert({
-    where: { codeName: 'WAIT' },
-    update: {},
-    create: {
+    {
       codeName: 'WAIT',
       name: 'Wait',
       category: 'SYSTEM',
@@ -151,28 +117,17 @@ async function seedData() {
       inputType: 'float',
       description: 'System will wait for given amount of minues',
     },
-  });
-
-  console.log(`Template: ${template5.codeName}`);
-
-  const template6 = await db.functionTemplates.upsert({
-    where: { codeName: 'MANUAL' },
-    update: {},
-    create: {
+    {
       codeName: 'MANUAL',
       name: 'Manual step',
       category: 'SYSTEM',
       inputType: 'string',
       description: 'System will wait for manual inervention',
     },
-  });
+  ];
 
-  console.log(`Template: ${template6.codeName}`);
-
-  const recipe1 = await db.recipes.upsert({
-    where: { name: 'Smoky Grove Lichtenhainer' },
-    update: {},
-    create: {
+  const recipes: Prisma.RecipesCreateInput[] = [
+    {
       name: 'Smoky Grove Lichtenhainer',
       description:
         'Light, gently tart, and smoked—lichtenhainer is an unusual beer, yet surprisingly good for all seasons and one you’ll want to brew and enjoy often.',
@@ -300,26 +255,7 @@ async function seedData() {
         ],
       },
     },
-    include: {
-      Ingredients: true,
-      Instructions: {
-        include: {
-          Blocks: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  console.log(`Recipe: ${recipe1.name}`);
-
-  const recipe2 = await db.recipes.upsert({
-    where: { name: 'Vanilla Cream Ale' },
-    update: {},
-    create: {
+    {
       name: 'Vanilla Cream Ale',
       description:
         'Courtesy of the brewing team at Burke-Gilman in Seattle, here is a homebrew-scale recipe for the double hazy IPA that won GABF gold in 2020.',
@@ -501,32 +437,33 @@ async function seedData() {
         ],
       },
     },
-    include: {
-      Ingredients: true,
-      Instructions: {
-        include: {
-          Blocks: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  ];
+  await Promise.all(
+    templates.map(async (template) => {
+      await db.functionTemplates.create({
+        data: template,
+      });
+    })
+  );
 
-  console.log(`Recipe: ${recipe2.name}`);
-
-  console.log('Seeded new data!');
+  // eslint-disable-next-line no-restricted-syntax
+  for (const recipe of recipes) {
+    // eslint-disable-next-line no-await-in-loop
+    await db.recipes.create({
+      data: recipe,
+      include: recipeInclude,
+    });
+  }
+  logger.info('Seeded new data!');
 }
 
 async function main() {
-  await dropData();
   await seedData();
 }
 
 main()
   .catch((e) => {
+    logger.error(e);
     console.error(e);
     process.exit(1);
   })

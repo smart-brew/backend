@@ -13,13 +13,13 @@
     "format:prettier": "prettier \"**/*.{cjs,html,js,json,md,ts,tsx}\" --write",
     "migrate": "yarn dotenv -e .dev.env yarn prisma migrate dev",
     "prepare": "husky install",
-    "seed": "yarn dotenv -e .dev.env yarn prisma db seed",
+    "seed": "yarn dotenv -e .dev.env yarn prisma migrate reset",
     "start": "node .",
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
     "test": "yarn dotenv -e .dev.env jest -i --forceExit"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

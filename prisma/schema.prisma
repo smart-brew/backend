@@ -91,7 +91,7 @@ model Ingredients {
 
 model Recipes {
   id           Int            @id @default(autoincrement())
-  name         String         @unique @db.VarChar
+  name         String         @db.VarChar
   description  String?        @db.VarChar
   locked       Boolean        @default(false) @db.Boolean
   createdAt    DateTime       @default(now())
