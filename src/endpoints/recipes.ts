@@ -66,7 +66,7 @@ export const editRecipe = async (req: Request, res: Response) => {
     const result = await createRecipeQuery(req.body);
     res.json(result);
   } catch (e) {
-    queryErrorHanlder(e, `PUT /api/recipe/${recipeId}/delete`, res);
+    queryErrorHanlder(e, `PUT /api/recipe/${recipeId}/edit`, res);
   }
 };
 

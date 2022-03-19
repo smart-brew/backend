@@ -449,10 +449,11 @@ async function seedData() {
   // eslint-disable-next-line no-restricted-syntax
   for (const recipe of recipes) {
     // eslint-disable-next-line no-await-in-loop
-    await db.recipes.create({
+    const result = await db.recipes.create({
       data: recipe,
       include: recipeInclude,
     });
+    logger.child({ recipe: result }).info('Added recipe');
   }
   logger.info('Seeded new data!');
 }
