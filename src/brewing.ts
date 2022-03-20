@@ -133,8 +133,8 @@ function executeInstruction() {
 
   sendInstruction({
     type: 'instruction',
-    moduleId: currInst.FunctionOptions.module,
-    device: currInst.FunctionOptions.codeName,
+    moduleId: currInst.FunctionOptions?.module ?? 1, // if no moduleId provided, send it to moduleId=1
+    device: currInst.FunctionOptions?.codeName,
     category: currInst.FunctionTemplates.category,
     instruction: currInst.FunctionTemplates.codeName,
     params: currInst.param,
