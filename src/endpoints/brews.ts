@@ -15,6 +15,7 @@ import {
   moveToNextInstruction,
   IsRecipeLoaded,
   setRecipe,
+  IsBrewingReady,
 } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
@@ -25,9 +26,12 @@ export const brewStatus = (req: Request, res: Response) => {
 export const startNewBrewing = async (req: Request, res: Response) => {
   logger.child({ body: req.body }).debug(`PUT /api/brew/0/start`);
   const { recipeId }: StartBrewBody = req.body;
+  if (!IsBrewingReady()) {
+    res.json({ error: 'Another brewing is already in progress' });
+    return;
+  }
   try {
-    const isLoaded = IsRecipeLoaded();
-    if (!isLoaded) {
+    if (!IsRecipeLoaded()) {
       const recipe = await loadRecipeQuery(recipeId);
       setRecipe(recipe);
     }

@@ -245,3 +245,7 @@ function finishBrewing() {
 export const IsRecipeLoaded = () => {
   return loadedRecipe !== undefined;
 };
+
+export const IsBrewingReady = () => {
+  return state.brewStatus !== 'IN_PROGRESS';
+};
