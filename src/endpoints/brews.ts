@@ -27,6 +27,7 @@ export const startNewBrewing = async (req: Request, res: Response) => {
   logger.child({ body: req.body }).debug(`PUT /api/brew/0/start`);
   const { recipeId }: StartBrewBody = req.body;
   if (!IsBrewingReady()) {
+    logger.error('Another brewing is already in progress');
     res.json({ error: 'Another brewing is already in progress' });
     return;
   }
