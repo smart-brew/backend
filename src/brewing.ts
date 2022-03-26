@@ -247,5 +247,5 @@ export const IsRecipeLoaded = () => {
 };
 
 export const IsBrewingReady = () => {
-  return state.brewStatus !== 'IN_PROGRESS';
+  return state.brewStatus !== 'IDLE';
 };
