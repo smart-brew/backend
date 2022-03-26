@@ -104,7 +104,11 @@ export const getState = () => {
 };
 
 async function startInstruction() {
-  if (state.brewStatus !== 'IN_PROGRESS' && state.instruction.status !== 'DONE')
+  if (
+    state.brewStatus !== 'IN_PROGRESS' ||
+    (state.instruction.status !== 'WAITING' &&
+      state.instruction.status !== 'DONE')
+  )
     return;
   state.instruction.currentInstruction = loadedRecipe.Instructions[0].id;
   state.instruction.status = 'IN_PROGRESS';
@@ -194,6 +198,11 @@ export const startBrewing = (id: number) => {
 export const abortBrewing = () => {
   logger.info(`Aborting brewing with id ${brewId}`);
   state.brewStatus = 'IDLE';
+  state.instruction = {
+    currentInstruction: -1,
+    currentValue: 0,
+    status: 'WAITING',
+  };
   loadedRecipe = undefined;
   clearInterval(statusLoggerInterval);
   sendAbort();

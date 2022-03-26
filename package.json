@@ -16,6 +16,7 @@
     "seed": "yarn dotenv -e .dev.env yarn prisma migrate reset",
     "start": "node .",
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
+    "studio": "yarn dotenv -e .dev.env yarn prisma studio",
     "test": "yarn dotenv -e .dev.env jest -i --forceExit"
   },
   "prisma": {
