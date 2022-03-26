@@ -241,3 +241,7 @@ function finishBrewing() {
   loadedRecipe = undefined;
   clearInterval(statusLoggerInterval);
 }
+
+export const IsRecipeLoaded = () => {
+  return loadedRecipe !== undefined;
+};

@@ -40,7 +40,7 @@ export const loadRecipe = async (req: Request, res: Response) => {
   const { recipeId } = req.params;
   logger.debug(`POST /api/recipe/${recipeId}/load`);
   try {
-    const recipe = await loadRecipeQuery(recipeId);
+    const recipe = await loadRecipeQuery(parseInt(recipeId, 10));
     setRecipe(recipe);
     res.json(recipe);
   } catch (e) {

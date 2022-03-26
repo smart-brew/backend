@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { exec } from 'child_process';
 
+import { loadRecipeQuery } from '../helpers/recipe';
 import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
 import { StartBrewBody } from '../types/Endpoints';
@@ -12,6 +13,8 @@ import {
   pauseBrewing,
   resumeBrewing,
   moveToNextInstruction,
+  IsRecipeLoaded,
+  setRecipe,
 } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
@@ -23,6 +26,11 @@ export const startNewBrewing = async (req: Request, res: Response) => {
   logger.child({ body: req.body }).debug(`PUT /api/brew/0/start`);
   const { recipeId }: StartBrewBody = req.body;
   try {
+    const isLoaded = IsRecipeLoaded();
+    if (!isLoaded) {
+      const recipe = await loadRecipeQuery(recipeId);
+      setRecipe(recipe);
+    }
     const result = await db.brewings.create({
       data: {
         Recipes: { connect: { id: recipeId } },

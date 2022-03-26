@@ -144,10 +144,10 @@ export async function createRecipeQuery(recipe: RecipeApi) {
   });
 }
 
-export async function loadRecipeQuery(recipeId: string) {
+export async function loadRecipeQuery(recipeId: number) {
   return db.recipes.findUnique({
     where: {
-      id: parseInt(recipeId, 10),
+      id: recipeId,
     },
     include: {
       Instructions: {
