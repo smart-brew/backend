@@ -56,7 +56,7 @@ jobs:
       - name: Rsync to TEAM VM
         uses: burnett01/rsync-deployments@5.1
         with:
-          switches: -Pav -O --no-perms --delete --exclude="node_modules" --exclude="src" --exclude="public"
+          switches: -Pav -O --no-perms --delete --exclude="node_modules" --exclude="src" --exclude="public" --exclude=".git"
           remote_path: ~/backend/
           remote_host: ${{ secrets.HOST }}
           remote_user: ${{ secrets.USERNAME }}

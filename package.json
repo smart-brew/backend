@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && tsc",
@@ -20,7 +20,7 @@
     "test": "yarn dotenv -e .dev.env jest -i --forceExit"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "yarn build && node dist/prisma/seed.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
