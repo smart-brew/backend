@@ -108,6 +108,6 @@ jobs:
         run: |
           ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} /bin/bash <<- 'SSH_VM'
             cd ~/backend
-            docker-compose -f docker-compose.rpi.yml up --build --detach
+            docker-compose up --build --detach
           SSH_VM
 
