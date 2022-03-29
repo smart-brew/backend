@@ -56,7 +56,7 @@ jobs:
       - name: Rsync to TEAM VM
         uses: burnett01/rsync-deployments@5.1
         with:
-          switches: -Pav -O --no-perms --delete --exclude="node_modules" --exclude="src" --exclude="public" --exclude=".git"
+          switches: -Pav -O --no-perms --delete --exclude="node_modules" --exclude="public" --exclude=".git"
           remote_path: ~/backend/
           remote_host: ${{ secrets.HOST }}
           remote_user: ${{ secrets.USERNAME }}
@@ -91,7 +91,7 @@ jobs:
   
   start-team-vm:
     needs: [upload-vm]
-    name: Start docker pn Team VM
+    name: Start docker on Team VM
     runs-on: ubuntu-latest
 
     steps:
