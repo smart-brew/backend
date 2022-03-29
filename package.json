@@ -21,7 +21,7 @@
     "cypress:open": "yarn run cypress open"
   },
   "prisma": {
-    "seed": "yarn build && node dist/prisma/seed.js"
+    "seed": "node dist/prisma/seed.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
