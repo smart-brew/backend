@@ -2,7 +2,6 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    'cypress/globals': true,
   },
   extends: [
     'airbnb-base',
@@ -11,13 +10,12 @@ module.exports = {
     'prettier',
     'prettier/prettier',
     'plugin:prettier/recommended',
-    'plugin:cypress/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 13,
   },
-  plugins: ['@typescript-eslint', 'prettier', 'cypress'],
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     'no-console': 0,
     'import/extensions': [
@@ -37,14 +35,6 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/ban-ts-comment': 'warn',
-    'cypress/no-assigning-return-values': 'error',
-    'cypress/no-unnecessary-waiting': 'error',
-    'cypress/assertion-before-screenshot': 'warn',
-    'cypress/no-force': 'warn',
-    'cypress/no-async-tests': 'error',
-    'cypress/no-pause': 'error',
   },
   settings: {
     'import/resolver': {

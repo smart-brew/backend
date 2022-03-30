@@ -17,8 +17,7 @@
     "start": "node .",
     "start:dev": "yarn build && yarn dotenv -e .dev.env yarn start",
     "studio": "yarn dotenv -e .dev.env yarn prisma studio",
-    "test": "yarn dotenv -e .dev.env jest -i --forceExit",
-    "cypress:open": "yarn run cypress open"
+    "test": "yarn dotenv -e .dev.env jest -i --forceExit"
   },
   "prisma": {
     "seed": "node dist/prisma/seed.js"
@@ -33,12 +32,10 @@
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
     "commit-message-validator": "^1.0.2",
-    "cypress": "^9.5.3",
     "dotenv-cli": "^4.0.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.2",
