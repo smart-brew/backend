@@ -242,10 +242,10 @@ function finishBrewing() {
   clearInterval(statusLoggerInterval);
 }
 
-export const IsRecipeLoaded = () => {
+export const isRecipeLoaded = () => {
   return loadedRecipe !== undefined;
 };
 
-export const IsBrewingReady = () => {
-  return state.brewStatus !== 'IDLE';
+export const isBreweryIdle = () => {
+  return state.brewStatus === 'IDLE';
 };
