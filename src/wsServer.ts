@@ -1,5 +1,11 @@
+import { Request, Response } from 'express';
 import { WebSocketServer } from 'ws';
-import { abortBrewing, updateInstructions, updateStatus } from './brewing';
+import {
+  abortBrewing,
+  isBreweryIdle,
+  updateInstructions,
+  updateStatus,
+} from './brewing';
 import logger from './logger';
 
 import { ReceivedModuleData } from './types/ModuleData';
@@ -24,7 +30,7 @@ const startNewWss = (WS_PORT: number) => {
       logger.child({ data }).debug('Message recieved on WS');
       // update current system data, with the new data
       updateStatus(data);
-      updateInstructions();
+      if (!isBreweryIdle()) updateInstructions();
     });
 
     wsClient.sendJSON({ type: 'hello' });
@@ -61,14 +67,24 @@ const startNewWss = (WS_PORT: number) => {
 export const sendInstruction = (data: Instruction) => {
   logger
     .child({ data })
-    .debug(`Sending message to WS with moduleId ${data.moduleId}`);
+    .info(`Sending message to WS with moduleId ${data.moduleId}`);
   const wsClient = clients.find((client) => client.moduleId === data.moduleId);
   if (wsClient) {
     wsClient.sendJSON(data);
   } else {
     logger.error('WS module missing');
-    abortBrewing();
+    if (!isBreweryIdle()) abortBrewing();
   }
+};
+
+export const sendInstructionManually = (req: Request, res: Response) => {
+  logger.debug(`PUT /api/instruction`);
+  const instruction = req.body as unknown as Instruction;
+  if (isBreweryIdle()) {
+    sendInstruction(instruction);
+    res.status(200).send('Instruction sent');
+  } else
+    res.status(503).send('Instruction cannot be sent. Brewery is not idle.');
 };
 
 export const sendAbort = () => {

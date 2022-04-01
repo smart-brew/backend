@@ -21,6 +21,7 @@ import {
   deleteRecipe,
   editRecipe,
 } from './endpoints/recipes';
+import { sendInstructionManually } from './wsServer';
 
 const server: Application = express();
 
@@ -55,5 +56,7 @@ server.post('/api/brew/0/resume', resumeBrew);
 
 server.post('/api/brew/:brewId/instruction/:instructionId', editBrewStep);
 server.post('/api/brew/:brewId/instruction/:instructionId/done', confirmManual);
+
+server.post('/api/instruction', sendInstructionManually);
 
 export default server;
