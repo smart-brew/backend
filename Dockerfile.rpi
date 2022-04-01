@@ -2,7 +2,7 @@ FROM node:14-alpine
 WORKDIR /usr/src/app
 COPY package.json ./
 COPY yarn.lock ./
-RUN yarn
+RUN yarn --network-timeout 100000
 COPY ./ ./
 RUN yarn prisma generate
 ENTRYPOINT ["/bin/sh", "./entrypoint.rpi.sh" ]
