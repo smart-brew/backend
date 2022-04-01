@@ -188,7 +188,7 @@ async function seedData() {
           },
           {
             ordering: 2,
-            param: '5',
+            param: '50000',
             FunctionTemplates: {
               connect: {
                 codeName: 'WAIT',
@@ -328,7 +328,7 @@ async function seedData() {
           },
           {
             ordering: 2,
-            param: '20',
+            param: '120000',
             FunctionTemplates: {
               connect: {
                 codeName: 'WAIT',
