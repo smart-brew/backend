@@ -1,3 +1,5 @@
+/* eslint-disable no-labels */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-use-before-define */
 import { sendAbort, sendInstruction } from './wsServer';
 import logger from './logger';
@@ -25,6 +27,7 @@ const state: SystemData = {
     MOTOR: [],
     UNLOADER: [],
     PUMP: [],
+    SYSTEM: [],
   },
   instruction: {
     currentInstruction: -1,
@@ -53,11 +56,16 @@ const statusLogger = async () => {
 
 const updateData = (category: keyof ModuleData, newData: DataCategory) => {
   // update instruction status
-  if (
+  skip: if (
     loadedRecipe &&
-    loadedRecipe.Instructions[0].FunctionTemplates.category === category &&
-    loadedRecipe.Instructions[0].FunctionOptions?.codeName === newData.DEVICE
+    loadedRecipe.Instructions[0].FunctionTemplates.category === category
   ) {
+    if (
+      loadedRecipe.Instructions[0].FunctionOptions &&
+      loadedRecipe.Instructions[0].FunctionOptions.codeName !== newData.DEVICE
+    )
+      break skip;
+
     state.instruction.status = newData.STATE;
 
     if (category === 'MOTOR')
@@ -108,8 +116,10 @@ async function startInstruction() {
     state.brewStatus !== 'IN_PROGRESS' ||
     (state.instruction.status !== 'WAITING' &&
       state.instruction.status !== 'DONE')
-  )
+  ) {
+    logger.info('Cannot start new isntruction');
     return;
+  }
   state.instruction.currentInstruction = loadedRecipe.Instructions[0].id;
   state.instruction.status = 'IN_PROGRESS';
   state.instruction.currentValue = 0;
@@ -174,8 +184,8 @@ async function updateInstructionLog() {
 
 //  move to next one by ordering number or finishBrewing
 export function moveToNextInstruction() {
-  if (state.brewStatus !== 'IN_PROGRESS' && state.brewStatus !== 'PAUSED')
-    logger.info('Cannot move to next instruction');
+  logger.info('Move to next instruction');
+
   updateInstructionLog();
 
   loadedRecipe.Instructions.shift();

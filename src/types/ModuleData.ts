@@ -20,13 +20,17 @@ export type Unloader = BasicData & {};
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Pump = BasicData & {};
 
-export type DataCategory = Temperature | Motor | Unloader | Pump;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type System = BasicData & {};
+
+export type DataCategory = Temperature | Motor | Unloader | Pump | System;
 
 export interface ModuleData {
   TEMPERATURE: Array<Temperature>;
   MOTOR: Array<Motor>;
   UNLOADER: Array<Unloader>;
   PUMP: Array<Pump>;
+  SYSTEM: Array<System>;
 }
 
 export const categoryKeys: (keyof ModuleData)[] = [
@@ -34,6 +38,7 @@ export const categoryKeys: (keyof ModuleData)[] = [
   'MOTOR',
   'UNLOADER',
   'PUMP',
+  'SYSTEM',
 ];
 
 export type ReceivedModuleData = Partial<ModuleData> & {
