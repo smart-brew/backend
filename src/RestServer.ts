@@ -10,6 +10,7 @@ import {
   getAllBrews,
   pauseBrew,
   resumeBrew,
+  shutdown,
   startNewBrewing,
 } from './endpoints/brews';
 
@@ -58,5 +59,7 @@ server.post('/api/brew/:brewId/instruction/:instructionId', editBrewStep);
 server.post('/api/brew/:brewId/instruction/:instructionId/done', confirmManual);
 
 server.post('/api/instruction', sendInstructionManually);
+
+server.post('/api/shutdown', shutdown);
 
 export default server;
