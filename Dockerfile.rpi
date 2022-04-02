@@ -1,4 +1,4 @@
-FROM node:16-slim
+FROM node:lts
 WORKDIR /usr/src/app
 COPY package.json ./
 COPY yarn.lock ./
@@ -9,4 +9,3 @@ COPY ./ ./
 RUN yarn prisma generate
 RUN yarn build
 ENTRYPOINT ["/bin/sh", "./entrypoint.rpi.sh" ]
-

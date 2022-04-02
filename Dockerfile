@@ -1,7 +1,9 @@
-FROM node:14-alpine
+FROM node:lts
 WORKDIR /usr/src/app
 COPY package.json ./
 COPY yarn.lock ./
+RUN apt-get update
+RUN apt-get install -y openssl
 RUN yarn --network-timeout 100000
 COPY ./ ./
 RUN yarn prisma generate
