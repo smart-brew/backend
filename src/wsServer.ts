@@ -82,9 +82,11 @@ export const sendInstructionManually = (req: Request, res: Response) => {
   const instruction = req.body as unknown as Instruction;
   if (isBreweryIdle()) {
     sendInstruction(instruction);
-    res.status(200).send('Instruction sent');
+    res.status(200).json({ message: 'Instruction sent' });
   } else
-    res.status(503).send('Instruction cannot be sent. Brewery is not idle.');
+    res
+      .status(400)
+      .json({ message: 'Instruction cannot be sent. Brewery is not idle.' });
 };
 
 export const sendAbort = () => {
