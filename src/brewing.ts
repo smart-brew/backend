@@ -243,6 +243,7 @@ function finishBrewing() {
 
 function resetBreweryState() {
   clearInterval(statusLoggerInterval);
+  statusLogger();
   state.brewStatus = 'IDLE';
   state.instruction = {
     currentInstruction: -1,
