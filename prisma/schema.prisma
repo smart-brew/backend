@@ -18,6 +18,7 @@ model Brewings {
   recipeId        Int?
   notes           String?           @db.VarChar
   evaluation      Int?
+  state           String            @default("Active")
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   Recipes         Recipes?          @relation(fields: [recipeId], references: [id], onDelete: SetNull, onUpdate: NoAction)

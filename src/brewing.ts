@@ -16,6 +16,7 @@ import {
 } from './types/ModuleData';
 import { LoadedRecipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
+import { setBrewingState } from './helpers/brewings';
 
 let loadedRecipe: LoadedRecipe;
 let brewId: number;
@@ -207,15 +208,9 @@ export const startBrewing = (id: number) => {
 
 export const abortBrewing = () => {
   logger.info(`Aborting brewing with id ${brewId}`);
-  state.brewStatus = 'IDLE';
-  state.instruction = {
-    currentInstruction: -1,
-    currentValue: 0,
-    status: 'WAITING',
-  };
-  loadedRecipe = undefined;
-  clearInterval(statusLoggerInterval);
+  setBrewingState(brewId, 'Aborted');
   sendAbort();
+  resetBreweryState();
   return 'BREWING ABORTED';
 };
 
@@ -242,14 +237,20 @@ export const resumeBrewing = (): string => {
 
 function finishBrewing() {
   logger.info('Brewing finished');
+  setBrewingState(brewId, 'Finished');
+  resetBreweryState();
+}
+
+function resetBreweryState() {
+  clearInterval(statusLoggerInterval);
   state.brewStatus = 'IDLE';
   state.instruction = {
     currentInstruction: -1,
     currentValue: 0,
     status: 'WAITING',
   };
+  brewId = undefined;
   loadedRecipe = undefined;
-  clearInterval(statusLoggerInterval);
 }
 
 export const isRecipeLoaded = () => {
