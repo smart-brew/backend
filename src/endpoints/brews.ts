@@ -53,7 +53,15 @@ export const startNewBrewing = async (req: Request, res: Response) => {
 export const getAllBrews = async (req: Request, res: Response) => {
   logger.debug(`GET /api/brew`);
   try {
-    res.json(await db.brewings.findMany());
+    res.json(
+      await db.brewings.findMany({
+        where: {
+          NOT: {
+            state: 'Active',
+          },
+        },
+      })
+    );
   } catch (e) {
     queryErrorHanlder(e, `GET /api/brew`, res);
   }
