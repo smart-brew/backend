@@ -39,6 +39,7 @@ const state: SystemData = {
 };
 
 let statusLoggerInterval: NodeJS.Timeout;
+export const timeinterval = 1000;
 
 const statusLogger = async () => {
   // logger.child({ state }).debug('Status logger');
@@ -202,7 +203,7 @@ export const startBrewing = (id: number) => {
   logger.info(`Starting new brewing with id ${id}`);
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
-  statusLoggerInterval = setInterval(statusLogger, 1000);
+  statusLoggerInterval = setInterval(statusLogger, timeinterval);
   startInstruction();
 };
 

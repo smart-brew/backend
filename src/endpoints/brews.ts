@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { exec } from 'child_process';
 
+import { getBrewingQuery, processBrewing } from '../helpers/brewings';
 import { loadRecipeQuery } from '../helpers/recipe';
 import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
@@ -64,6 +65,17 @@ export const getAllBrews = async (req: Request, res: Response) => {
     );
   } catch (e) {
     queryErrorHanlder(e, `GET /api/brew`, res);
+  }
+};
+
+export const getBrewing = async (req: Request, res: Response) => {
+  const brewId = parseInt(req.params.brewId, 10);
+  logger.debug(`GET /api/brew/${brewId}`);
+
+  try {
+    res.json(processBrewing(await getBrewingQuery(brewId)));
+  } catch (e) {
+    queryErrorHanlder(e, `GET /api/brew/${brewId}`, res);
   }
 };
 
