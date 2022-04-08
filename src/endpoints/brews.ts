@@ -1,7 +1,12 @@
 import { Request, Response } from 'express';
 import { exec } from 'child_process';
 
-import { getBrewingQuery, processBrewing } from '../helpers/brewings';
+import {
+  getAllBrewingsQuery,
+  getBrewingQuery,
+  processAllBrewings,
+  processBrewing,
+} from '../helpers/brewings';
 import { loadRecipeQuery } from '../helpers/recipe';
 import queryErrorHanlder from '../queryErrorHandler';
 import logger from '../logger';
@@ -54,15 +59,7 @@ export const startNewBrewing = async (req: Request, res: Response) => {
 export const getAllBrews = async (req: Request, res: Response) => {
   logger.debug(`GET /api/brew`);
   try {
-    res.json(
-      await db.brewings.findMany({
-        where: {
-          NOT: {
-            state: 'Active',
-          },
-        },
-      })
-    );
+    res.json(processAllBrewings(await getAllBrewingsQuery()));
   } catch (e) {
     queryErrorHanlder(e, `GET /api/brew`, res);
   }

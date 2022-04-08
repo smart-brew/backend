@@ -1,6 +1,6 @@
 import { InstructionLogs, StatusLogs } from '@prisma/client';
 import { timeinterval } from '../brewing';
-import { BrewingApi, BrewingRaw } from '../types/Brewing';
+import { BrewingApi, BrewingRaw, BrewinsgRaw } from '../types/Brewing';
 import queryErrorHanlder from '../queryErrorHandler';
 import db from '../prismaClient';
 import { formatRecipe } from './recipe';
@@ -18,6 +18,15 @@ export const setBrewingState = async (id: number, state: string) => {
   } catch (e) {
     queryErrorHanlder(e, 'Brewing state update query');
   }
+};
+export const getAllBrewingsQuery = async () => {
+  return db.brewings.findMany({
+    where: {
+      NOT: {
+        state: 'Active',
+      },
+    },
+  });
 };
 
 export const getBrewingQuery = async (id: number) => {
@@ -91,4 +100,17 @@ export const processBrewing = (brewing: BrewingRaw) => {
   };
 
   return brew;
+};
+
+export const processAllBrewings = (allBrewings: BrewinsgRaw) => {
+  return allBrewings.map((brewing) => {
+    return {
+      id: brewing.id,
+      notes: brewing.notes,
+      evaluation: brewing.evaluation,
+      endState: brewing.state,
+      startedAt: brewing.createdAt,
+      finishedAt: brewing.updatedAt ? brewing.updatedAt : null,
+    };
+  });
 };

@@ -1,8 +1,9 @@
 import { Prisma } from '@prisma/client';
-import { getBrewingQuery } from '../helpers/brewings';
+import { getBrewingQuery, getAllBrewingsQuery } from '../helpers/brewings';
 import { RecipeApi } from './Recipe';
 
 export type BrewingRaw = Prisma.PromiseReturnType<typeof getBrewingQuery>;
+export type BrewinsgRaw = Prisma.PromiseReturnType<typeof getAllBrewingsQuery>;
 
 export interface InstructionLogApi {
   id: number;
