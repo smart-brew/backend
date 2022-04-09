@@ -21,13 +21,17 @@ export interface StatusLogApi {
   createdAt: number;
 }
 
-export interface BrewingApi {
+export interface BaseBrewingApi {
   id: number;
   notes: string | null;
   evaluation: number | null;
   endState: string;
+  recipeName: string;
   startedAt: Date;
   finishedAt: Date;
+}
+
+export interface BrewingApi extends BaseBrewingApi {
   recipe: RecipeApi;
   InstructionLogs: InstructionLogApi[];
   StatusLogs: StatusLogApi[];
