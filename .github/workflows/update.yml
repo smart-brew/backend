@@ -90,6 +90,9 @@ jobs:
           SSH_VM
   
   start-team-vm:
+    # TODO remove temporary skip
+    if: ${{ false }}
+    
     needs: [upload-vm]
     name: Start docker on Team VM
     runs-on: ubuntu-latest
