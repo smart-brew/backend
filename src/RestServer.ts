@@ -8,6 +8,7 @@ import {
   confirmManual,
   editBrewStep,
   getAllBrews,
+  getBrewing,
   pauseBrew,
   resumeBrew,
   shutdown,
@@ -55,6 +56,7 @@ server.post('/api/brew/0/abort', abortBrew);
 server.post('/api/brew/0/pause', pauseBrew);
 server.post('/api/brew/0/resume', resumeBrew);
 
+server.get('/api/brew/:brewId', getBrewing);
 server.post('/api/brew/:brewId/instruction/:instructionId', editBrewStep);
 server.post('/api/brew/:brewId/instruction/:instructionId/done', confirmManual);
 

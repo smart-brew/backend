@@ -16,6 +16,7 @@ import {
 } from './types/ModuleData';
 import { LoadedRecipe } from './types/Recipe';
 import { SystemData } from './types/SystemData';
+import { setBrewingState } from './helpers/brewings';
 
 let loadedRecipe: LoadedRecipe;
 let brewId: number;
@@ -38,6 +39,7 @@ const state: SystemData = {
 };
 
 let statusLoggerInterval: NodeJS.Timeout;
+export const timeinterval = 1000;
 
 const statusLogger = async () => {
   // logger.child({ state }).debug('Status logger');
@@ -201,21 +203,15 @@ export const startBrewing = (id: number) => {
   logger.info(`Starting new brewing with id ${id}`);
   brewId = id;
   state.brewStatus = 'IN_PROGRESS';
-  statusLoggerInterval = setInterval(statusLogger, 1000);
+  statusLoggerInterval = setInterval(statusLogger, timeinterval);
   startInstruction();
 };
 
 export const abortBrewing = () => {
   logger.info(`Aborting brewing with id ${brewId}`);
-  state.brewStatus = 'IDLE';
-  state.instruction = {
-    currentInstruction: -1,
-    currentValue: 0,
-    status: 'WAITING',
-  };
-  loadedRecipe = undefined;
-  clearInterval(statusLoggerInterval);
+  setBrewingState(brewId, 'Aborted');
   sendAbort();
+  resetBreweryState();
   return 'BREWING ABORTED';
 };
 
@@ -242,14 +238,21 @@ export const resumeBrewing = (): string => {
 
 function finishBrewing() {
   logger.info('Brewing finished');
+  setBrewingState(brewId, 'Finished');
+  resetBreweryState();
+}
+
+function resetBreweryState() {
+  clearInterval(statusLoggerInterval);
+  statusLogger();
   state.brewStatus = 'IDLE';
   state.instruction = {
     currentInstruction: -1,
     currentValue: 0,
     status: 'WAITING',
   };
+  brewId = undefined;
   loadedRecipe = undefined;
-  clearInterval(statusLoggerInterval);
 }
 
 export const isRecipeLoaded = () => {
