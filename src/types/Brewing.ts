@@ -21,11 +21,13 @@ export interface StatusLogApi {
   createdAt: number;
 }
 
+export type BrewState = 'Aborted' | 'Finished';
+
 export interface BaseBrewingApi {
   id: number;
   notes: string | null;
   evaluation: number | null;
-  endState: string;
+  endState: BrewState;
   recipeName: string;
   startedAt: Date;
   finishedAt: Date;

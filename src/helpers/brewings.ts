@@ -5,12 +5,13 @@ import {
   BrewingApi,
   BrewingRaw,
   BrewinsgRaw,
+  BrewState,
 } from '../types/Brewing';
 import queryErrorHanlder from '../queryErrorHandler';
 import db from '../prismaClient';
 import { formatRecipe } from './recipe';
 
-export const setBrewingState = async (id: number, state: string) => {
+export const setBrewingState = async (id: number, state: BrewState) => {
   try {
     await db.brewings.update({
       where: {
@@ -80,7 +81,7 @@ export const processBrewing = (brewing: BrewingRaw) => {
     id: brewing.id,
     notes: brewing.notes,
     evaluation: brewing.evaluation,
-    endState: brewing.state,
+    endState: brewing.state as BrewState,
     recipeName: brewing.Recipes.name,
     startedAt: brewing.createdAt,
     finishedAt: brewing.updatedAt,
@@ -123,7 +124,7 @@ export const processAllBrewings = (
       id: brewing.id,
       notes: brewing.notes,
       evaluation: brewing.evaluation,
-      endState: brewing.state,
+      endState: brewing.state as BrewState,
       recipeName: brewing.Recipes.name,
       startedAt: brewing.createdAt,
       finishedAt: brewing.updatedAt,
