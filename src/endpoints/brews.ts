@@ -23,11 +23,13 @@ import {
   isRecipeLoaded,
   setRecipe,
   isBreweryIdle,
+  resetEndState,
 } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
   logger.debug(`GET /api/data`);
   res.json(getState());
+  resetEndState();
 };
 
 export const startNewBrewing = async (req: Request, res: Response) => {

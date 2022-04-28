@@ -36,6 +36,7 @@ const state: SystemData = {
     status: 'WAITING',
   },
   brewStatus: 'IDLE',
+  errorMessage: '',
 };
 
 let statusLoggerInterval: NodeJS.Timeout;
@@ -111,6 +112,10 @@ export const setRecipe = (recipe: LoadedRecipe) => {
 
 export const getState = () => {
   return state;
+};
+export const resetEndState = () => {
+  if (state.brewStatus === 'ABORT' || state.brewStatus === 'FINISHED')
+    state.brewStatus = 'IDLE';
 };
 
 async function startInstruction() {
@@ -212,6 +217,7 @@ export const abortBrewing = () => {
   setBrewingState(brewId, 'Aborted');
   sendAbort();
   resetBreweryState();
+  state.brewStatus = 'ABORT';
   return 'BREWING ABORTED';
 };
 
@@ -240,12 +246,12 @@ function finishBrewing() {
   logger.info('Brewing finished');
   setBrewingState(brewId, 'Finished');
   resetBreweryState();
+  state.brewStatus = 'FINISHED';
 }
 
 function resetBreweryState() {
   clearInterval(statusLoggerInterval);
   statusLogger();
-  state.brewStatus = 'IDLE';
   state.instruction = {
     currentInstruction: -1,
     currentValue: 0,
