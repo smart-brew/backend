@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { exec } from 'child_process';
 
+import { getBreweryData, getBreweryDataJson } from '../helpers/export';
 import {
   getAllBrewingsQuery,
   getBrewingQuery,
@@ -124,6 +125,22 @@ export const confirmManual = async (req: Request, res: Response) => {
       .status(400)
       .json({ error: 'InstructionId does not match current instructionId' });
   }
+};
+
+export const exportDataCsv = async (req: Request, res: Response) => {
+  const brewId = parseInt(req.params.brewId, 10);
+  logger.debug(`GET /api/brew/${brewId}/exportCsv`);
+
+  const csv = await getBreweryData(brewId);
+  res.attachment(`brewing${brewId}Data.csv`).send(csv);
+};
+
+export const exportDataJson = async (req: Request, res: Response) => {
+  const brewId = parseInt(req.params.brewId, 10);
+  logger.debug(`GET /api/brew/${brewId}/exportJson`);
+
+  const json = await getBreweryDataJson(brewId);
+  res.attachment(`brewing${brewId}Data.json`).send(json);
 };
 
 export const shutdown = (req: Request, res: Response) => {

@@ -7,6 +7,8 @@ import {
   brewStatus,
   confirmManual,
   editBrewStep,
+  exportDataCsv,
+  exportDataJson,
   getAllBrews,
   getBrewing,
   pauseBrew,
@@ -57,6 +59,9 @@ server.post('/api/brew/0/pause', pauseBrew);
 server.post('/api/brew/0/resume', resumeBrew);
 
 server.get('/api/brew/:brewId', getBrewing);
+server.get('/api/brew/:brewId/exportCsv', exportDataCsv);
+server.get('/api/brew/:brewId/exportJson', exportDataJson);
+
 server.post('/api/brew/:brewId/instruction/:instructionId', editBrewStep);
 server.post('/api/brew/:brewId/instruction/:instructionId/done', confirmManual);
 
