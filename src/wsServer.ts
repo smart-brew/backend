@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { WebSocketServer } from 'ws';
 import {
-  abortBrewing,
   isBreweryIdle,
+  missingModule,
   updateInstructions,
   updateStatus,
 } from './brewing';
@@ -30,7 +30,7 @@ const startNewWss = (WS_PORT: number) => {
       logger.child({ data }).debug('Message recieved on WS');
       // update current system data, with the new data
       updateStatus(data);
-      if (!isBreweryIdle()) updateInstructions();
+      if (!isBreweryIdle()) updateInstructions(wsClient.moduleId);
     });
 
     wsClient.sendJSON({ type: 'hello' });
@@ -73,7 +73,7 @@ export const sendInstruction = (data: Instruction) => {
     wsClient.sendJSON(data);
   } else {
     logger.error('WS module missing');
-    if (!isBreweryIdle()) abortBrewing();
+    missingModule(data.moduleId);
   }
 };
 

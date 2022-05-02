@@ -162,10 +162,11 @@ function executeInstruction() {
   });
 }
 
-export function updateInstructions() {
+export function updateInstructions(moduleId: number) {
   if (state.instruction.status === 'ERROR') {
     state.brewStatus = 'ERROR';
-    // TODO Error handle
+    state.errorMessage = `Error reported by module ${moduleId}. Brewing aborted.`;
+    abortBrewing();
   } else if (state.instruction.status === 'DONE') {
     moveToNextInstruction();
   }
@@ -257,6 +258,7 @@ function resetBreweryState() {
     currentValue: 0,
     status: 'WAITING',
   };
+  state.errorMessage = '';
   brewId = undefined;
   loadedRecipe = undefined;
 }
@@ -267,4 +269,10 @@ export const isRecipeLoaded = () => {
 
 export const isBreweryIdle = () => {
   return state.brewStatus === 'IDLE';
+};
+
+export const missingModule = (moduleId: number) => {
+  state.brewStatus = 'ERROR';
+  state.errorMessage = `Error, module ${moduleId} is missing. Any ongoing brewing has been aborted`;
+  if (!isBreweryIdle()) abortBrewing();
 };
