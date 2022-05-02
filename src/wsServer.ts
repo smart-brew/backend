@@ -95,4 +95,11 @@ export const sendAbort = () => {
   });
 };
 
+export const getModuleIds = () => {
+  const moduleIds = clients.map((client) => {
+    return client.moduleId;
+  });
+  return moduleIds;
+};
+
 export default startNewWss;

@@ -1,7 +1,7 @@
 /* eslint-disable no-labels */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-use-before-define */
-import { sendAbort, sendInstruction } from './wsServer';
+import { getModuleIds, sendAbort, sendInstruction } from './wsServer';
 import logger from './logger';
 import db from './prismaClient';
 import queryErrorHanlder from './queryErrorHandler';
@@ -208,9 +208,17 @@ export function moveToNextInstruction() {
 export const startBrewing = (id: number) => {
   logger.info(`Starting new brewing with id ${id}`);
   brewId = id;
-  state.brewStatus = 'IN_PROGRESS';
-  statusLoggerInterval = setInterval(statusLogger, timeinterval);
-  startInstruction();
+
+  const { allPresent, missingModuleId } = checkRequiredModules();
+
+  if (allPresent) {
+    state.brewStatus = 'IN_PROGRESS';
+    statusLoggerInterval = setInterval(statusLogger, timeinterval);
+    startInstruction();
+  } else {
+    state.brewStatus = 'ERROR';
+    state.errorMessage = `Error, module ${missingModuleId} is missing. Unable to start brewing.`;
+  }
 };
 
 export const abortBrewing = () => {
@@ -276,3 +284,33 @@ export const missingModule = (moduleId: number) => {
   state.errorMessage = `Error, module ${moduleId} is missing. Any ongoing brewing has been aborted`;
   if (!isBreweryIdle()) abortBrewing();
 };
+
+function checkRequiredModules() {
+  const connectedModuleIds = getModuleIds();
+  const requiredModuleIds = loadedRecipe.Instructions.filter((instruction) => {
+    return instruction.FunctionOptions !== null;
+  }).map((instruction) => {
+    return instruction.FunctionOptions.module;
+  });
+  console.log(requiredModuleIds);
+  const uniqueRequiredModuleIds = [...new Set(requiredModuleIds)];
+  let allPresent = true;
+  let missingModuleId;
+  console.log(uniqueRequiredModuleIds);
+
+  uniqueRequiredModuleIds.every((reqId) => {
+    if (
+      !connectedModuleIds.some((connId) => {
+        return connId === reqId;
+      })
+    ) {
+      allPresent = false;
+      missingModuleId = reqId;
+      return false;
+    }
+    return true;
+  });
+  console.log({ allPresent, missingModuleId });
+
+  return { allPresent, missingModuleId };
+}
