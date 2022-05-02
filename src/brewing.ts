@@ -292,11 +292,10 @@ function checkRequiredModules() {
   }).map((instruction) => {
     return instruction.FunctionOptions.module;
   });
-  console.log(requiredModuleIds);
+
   const uniqueRequiredModuleIds = [...new Set(requiredModuleIds)];
   let allPresent = true;
   let missingModuleId;
-  console.log(uniqueRequiredModuleIds);
 
   uniqueRequiredModuleIds.every((reqId) => {
     if (
@@ -310,7 +309,6 @@ function checkRequiredModules() {
     }
     return true;
   });
-  console.log({ allPresent, missingModuleId });
 
   return { allPresent, missingModuleId };
 }
