@@ -34,6 +34,7 @@ const state: SystemData = {
     currentInstruction: -1,
     currentValue: 0,
     status: 'WAITING',
+    moduleId: 0,
   },
   brewStatus: 'IDLE',
   errorMessage: '',
@@ -130,6 +131,8 @@ async function startInstruction() {
   state.instruction.currentInstruction = loadedRecipe.Instructions[0].id;
   state.instruction.status = 'IN_PROGRESS';
   state.instruction.currentValue = 0;
+  state.instruction.moduleId =
+    loadedRecipe.Instructions[0].FunctionOptions?.module ?? 1;
 
   try {
     const currentInstructionLog = await db.instructionLogs.create({
@@ -165,9 +168,11 @@ function executeInstruction() {
 export function updateInstructions(moduleId: number) {
   if (state.instruction.status === 'ERROR') {
     state.brewStatus = 'ERROR';
-    state.errorMessage = `Error reported by module ${moduleId}. Brewing aborted.`;
-    abortBrewing();
-  } else if (state.instruction.status === 'DONE') {
+    state.errorMessage = `Error reported by module ${moduleId}. Fix the issue and restart brewing.`;
+  } else if (
+    state.instruction.status === 'DONE' &&
+    state.brewStatus !== 'ERROR'
+  ) {
     moveToNextInstruction();
   }
 }
@@ -208,12 +213,12 @@ export function moveToNextInstruction() {
 export const startBrewing = (id: number) => {
   logger.info(`Starting new brewing with id ${id}`);
   brewId = id;
+  statusLoggerInterval = setInterval(statusLogger, timeinterval);
 
   const { allPresent, missingModuleId } = checkRequiredModules();
 
   if (allPresent) {
     state.brewStatus = 'IN_PROGRESS';
-    statusLoggerInterval = setInterval(statusLogger, timeinterval);
     startInstruction();
   } else {
     state.brewStatus = 'ERROR';
@@ -265,6 +270,7 @@ function resetBreweryState() {
     currentInstruction: -1,
     currentValue: 0,
     status: 'WAITING',
+    moduleId: 0,
   };
   state.errorMessage = '';
   brewId = undefined;
@@ -281,8 +287,7 @@ export const isBreweryIdle = () => {
 
 export const missingModule = (moduleId: number) => {
   state.brewStatus = 'ERROR';
-  state.errorMessage = `Error, module ${moduleId} is missing. Any ongoing brewing has been aborted`;
-  if (!isBreweryIdle()) abortBrewing();
+  state.errorMessage = `Error, module ${moduleId} is missing. Please connect the module and restart brewing`;
 };
 
 function checkRequiredModules() {
@@ -312,3 +317,20 @@ function checkRequiredModules() {
 
   return { allPresent, missingModuleId };
 }
+
+export const restartBrewing = () => {
+  if (state.brewStatus === 'ERROR') {
+    state.brewStatus = 'IN_PROGRESS';
+    startInstruction();
+    return 'RESTART SUCCESSFUL';
+  }
+  return 'NOT IN ERROR STATE';
+};
+
+export const closingModule = (moduleId: number) => {
+  if (
+    state.instruction.moduleId !== 0 &&
+    state.instruction.moduleId === moduleId
+  )
+    missingModule(moduleId);
+};

@@ -12,6 +12,7 @@ import {
   getAllBrews,
   getBrewing,
   pauseBrew,
+  resetBrew,
   resumeBrew,
   shutdown,
   startNewBrewing,
@@ -57,6 +58,7 @@ server.put('/api/brew/0/start', startNewBrewing);
 server.post('/api/brew/0/abort', abortBrew);
 server.post('/api/brew/0/pause', pauseBrew);
 server.post('/api/brew/0/resume', resumeBrew);
+server.post('/api/brew/0/reset', resetBrew);
 
 server.get('/api/brew/:brewId', getBrewing);
 server.get('/api/brew/:brewId/exportCsv', exportDataCsv);

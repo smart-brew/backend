@@ -12,6 +12,7 @@ export interface InstructionStatus {
   currentInstruction: number;
   currentValue: number;
   status: Status;
+  moduleId: number;
 }
 
 export interface SystemData {

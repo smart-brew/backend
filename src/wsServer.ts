@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { WebSocketServer } from 'ws';
 import {
+  closingModule,
   isBreweryIdle,
   missingModule,
   updateInstructions,
@@ -50,6 +51,7 @@ const startNewWss = (WS_PORT: number) => {
         logger.info(
           `Client "${wsClient.moduleId}" not alive, closing websocket!`
         );
+        closingModule(wsClient.moduleId);
 
         wsClient.terminate();
         const index = clients.indexOf(wsClient);

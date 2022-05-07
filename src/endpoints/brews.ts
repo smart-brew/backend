@@ -24,6 +24,7 @@ import {
   setRecipe,
   isBreweryIdle,
   resetEndState,
+  restartBrewing,
 } from '../brewing';
 
 export const brewStatus = (req: Request, res: Response) => {
@@ -92,6 +93,11 @@ export const pauseBrew = (req: Request, res: Response) => {
 export const resumeBrew = (req: Request, res: Response) => {
   logger.debug(`POST /api/brew/0/resume`);
   res.status(200).json(resumeBrewing());
+};
+
+export const resetBrew = (req: Request, res: Response) => {
+  logger.debug(`POST /api/brew/0/reset`);
+  res.status(200).json(restartBrewing());
 };
 
 export const editBrewStep = (req: Request, res: Response) => {
