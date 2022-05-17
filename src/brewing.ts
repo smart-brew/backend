@@ -122,8 +122,7 @@ export const resetEndState = () => {
 async function startInstruction() {
   if (
     state.brewStatus !== 'IN_PROGRESS' ||
-    (state.instruction.status !== 'WAITING' &&
-      state.instruction.status !== 'DONE')
+    state.instruction.status === 'IN_PROGRESS'
   ) {
     logger.info('Cannot start new isntruction');
     return;
@@ -222,6 +221,7 @@ export const startBrewing = (id: number) => {
     startInstruction();
   } else {
     state.brewStatus = 'ERROR';
+    state.instruction.status = 'ERROR';
     state.errorMessage = `Error, module ${missingModuleId} is missing. Unable to start brewing.`;
   }
 };
@@ -287,6 +287,7 @@ export const isBreweryIdle = () => {
 
 export const missingModule = (moduleId: number) => {
   state.brewStatus = 'ERROR';
+  state.instruction.status = 'ERROR';
   state.errorMessage = `Error, module ${moduleId} is missing. Please connect the module and restart brewing`;
 };
 
