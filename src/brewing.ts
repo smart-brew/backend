@@ -29,6 +29,7 @@ const state: SystemData = {
     UNLOADER: [],
     PUMP: [],
     SYSTEM: [],
+    RELAY: [],
   },
   instruction: {
     currentInstruction: -1,
@@ -75,7 +76,7 @@ const updateData = (category: keyof ModuleData, newData: DataCategory) => {
     if (category === 'MOTOR')
       state.instruction.currentValue = (newData as Motor).RPM;
     else if (category === 'TEMPERATURE')
-      state.instruction.currentValue = (newData as Temperature).TEMP;
+      state.instruction.currentValue = (newData as Temperature).temp1;
     else state.instruction.currentValue = 0;
   }
 

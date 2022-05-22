@@ -124,6 +124,31 @@ async function seedData() {
       inputType: 'string',
       description: 'System will wait for manual inervention',
     },
+    {
+      codeName: 'ENABLE_RELAY',
+      name: 'Relay',
+      category: 'RELAY',
+      description: 'Enables relay',
+      FunctionOptions: {
+        create: [
+          {
+            name: 'Relay 1',
+            codeName: 'RELAY_1',
+            module: 1,
+          },
+          {
+            name: 'Relay 2',
+            codeName: 'RELAY_2',
+            module: 1,
+          },
+          {
+            name: 'Pump',
+            codeName: 'RELAY_3',
+            module: 1,
+          },
+        ],
+      },
+    },
   ];
 
   const recipes: Prisma.RecipesCreateInput[] = [

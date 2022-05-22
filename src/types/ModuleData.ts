@@ -6,12 +6,18 @@ export interface BasicData {
 }
 
 export type Temperature = BasicData & {
-  TEMP: number;
+  temp0?: number;
+  temp1?: number;
 };
 
 export type Motor = BasicData & {
   SPEED: number;
   RPM: number;
+  enabled?: boolean;
+};
+
+export type Relay = BasicData & {
+  enabled: number;
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -23,7 +29,13 @@ export type Pump = BasicData & {};
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type System = BasicData & {};
 
-export type DataCategory = Temperature | Motor | Unloader | Pump | System;
+export type DataCategory =
+  | Temperature
+  | Motor
+  | Unloader
+  | Pump
+  | System
+  | Relay;
 
 export interface ModuleData {
   TEMPERATURE: Array<Temperature>;
@@ -31,6 +43,7 @@ export interface ModuleData {
   UNLOADER: Array<Unloader>;
   PUMP: Array<Pump>;
   SYSTEM: Array<System>;
+  RELAY: Array<Relay>;
 }
 
 export const categoryKeys: (keyof ModuleData)[] = [
@@ -39,6 +52,7 @@ export const categoryKeys: (keyof ModuleData)[] = [
   'UNLOADER',
   'PUMP',
   'SYSTEM',
+  'RELAY',
 ];
 
 export type ReceivedModuleData = Partial<ModuleData> & {
