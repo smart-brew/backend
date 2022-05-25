@@ -222,7 +222,7 @@ export const startBrewing = (id: number) => {
     startInstruction();
   } else {
     state.brewStatus = 'ERROR';
-    state.instruction.status = 'ERROR';
+    // state.instruction.status = 'ERROR';
     state.errorMessage = `Error, module ${missingModuleId} is missing. Unable to start brewing.`;
   }
 };
@@ -288,7 +288,7 @@ export const isBreweryIdle = () => {
 
 export const missingModule = (moduleId: number) => {
   state.brewStatus = 'ERROR';
-  state.instruction.status = 'ERROR';
+  // state.instruction.status = 'ERROR';
   state.errorMessage = `Error, module ${moduleId} is missing. Please connect the module and restart brewing`;
 };
 
